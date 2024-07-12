@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-
+import './taskList.css'
 const TaskCard = ({ task, onUpdateTask }) => {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [timeTaken, setTimeTaken] = useState(null);
   const [timerRunning, setTimerRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [resetTime, setresetTime] = useState(5);
 
   useEffect(() => {
     // console.log("useeeffect==",JSON.parse(localStorage.getItem('tasks')) || [])
@@ -15,7 +16,7 @@ const TaskCard = ({ task, onUpdateTask }) => {
       setStartTime(start.toLocaleTimeString());
       interval = setInterval(() => {
         const now = new Date();
-        const elapsed = Math.floor((now - start) / 1000); 
+        const elapsed = Math.floor((now - start) / 1000);
         setElapsedTime(elapsed);
       }, 1000);
     } else {
@@ -33,34 +34,35 @@ const TaskCard = ({ task, onUpdateTask }) => {
     const end = new Date();
     setEndTime(end.toLocaleTimeString());
     setTimerRunning(false);
-    const minutes = Math.floor(elapsedTime / 60);
-    const seconds = elapsedTime % 60;
-    setTimeTaken(`${minutes} min ${seconds} sec`);
+    const minutes = Math.floor(elapsedTime / 60) || '00';
+    const seconds = elapsedTime % 60 || '00';
+    setTimeTaken(`00:${minutes}:${seconds}`);
+    const updatedTask = { ...task, timeTakenToComplete: `00:${minutes}:${seconds}`, endDate: end.toLocaleTimeString(), isCompleted: true };
 
     const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    const updatedTasks = storedTasks.map(t => {
-      if (t.id === task.id) {
-        return {
-          ...t,
-          endDate: end.toLocaleTimeString(),
-          timeTakenToComplete: `${minutes} min ${seconds} sec`,
-          isCompleted: true  
-        };
-      }
-      return t;
-    });
-    console.log("====",updatedTasks)
-    onUpdateTask(updatedTasks);
+    const updatedTasks = storedTasks.map(t => (t.id === task.id ? updatedTask : t));
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    onUpdateTask(updatedTask);
+    console.log("====", updatedTasks)
   };
 
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins} min ${secs} sec`;
+    const mins = Math.floor(seconds / 60) || '00';
+    const secs = seconds % 60 || '00';
+    return `00:${mins}:${secs}`;
   };
 
   const handleAddMinutes = () => {
-    const newTimeToComplete = parseInt(task.timeToComplete) + 5;
+    const newTimeToComplete = parseInt(task.timeToComplete) + resetTime;
+    const updatedTask = { ...task, timeToComplete: newTimeToComplete.toString() };
+
+    const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const updatedTasks = storedTasks.map(t => (t.id === task.id ? updatedTask : t));
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    onUpdateTask(updatedTask);
+  };
+  const handleMinusMinutes = () => {
+    const newTimeToComplete = parseInt(task.timeToComplete) - resetTime;
     const updatedTask = { ...task, timeToComplete: newTimeToComplete.toString() };
 
     const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -69,18 +71,58 @@ const TaskCard = ({ task, onUpdateTask }) => {
     onUpdateTask(updatedTask);
   };
 
+  const handleEdit = () => {
+    const a = 3
+  }
+
+  const handleDelete = () => {
+    const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const newTasks = storedTasks.filter(t => t.id !== task.id);
+    localStorage.setItem('tasks', JSON.stringify(newTasks));
+    onUpdateTask(newTasks);
+    console.log(newTasks)
+  };
+
   return (
-    <div className="card">
-      <div className="card-body">
-        <h5 className="card-title">{task.title}</h5>
-        <p>
-          Time to Complete: {task.timeToComplete} 
-          <button className="btn btn-sm btn-info ml-2" onClick={handleAddMinutes}>+5 add</button>
-        </p>
-        <p>Elapsed Time: {formatTime(elapsedTime)}</p>
-        <p>Time Taken: {task.timeTakenToComplete}</p>
-        <button className="btn btn-primary mr-2" onClick={handleStart} disabled={timerRunning}>Start</button>
-        <button className="btn btn-success" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
+    <div className="card justify-content-center">
+      <div className="d-flex justify-content-between align-items-start mt-3 mb-3">
+        {task.isCompleted ? <span className='ml-3'>{task.timeTakenToComplete}</span>
+          :
+          <div>
+          <span className='mt-2 ml-4'>{formatTime(elapsedTime)}</span>
+          <span className='ml-3'>
+              <a className="btn btn-sm btn-primary text-white mr-2" onClick={handleMinusMinutes}>&nbsp;-&nbsp;</a>
+              {task.timeToComplete}
+              <a className="btn btn-sm btn-primary text-white ml-2" onClick={handleAddMinutes}>+</a>
+            </span>
+            </div>
+        } 
+        <span className="card-title h5 ">{task.title}</span>
+        <div>
+          {
+            task.isCompleted ?
+              <div>
+                <button className="btn btn-success mr-2" disabled>Completed</button>
+                <button className="btn btn-link p-0 mr-2" onClick={handleEdit(task)}>
+                  <i className="fas fa-edit"></i>
+                </button>
+                <button className="btn btn-link p-0 mr-4" onClick={handleDelete}>
+                  <i className="fas fa-trash-alt"></i>
+                </button>
+              </div>
+              :
+              <div>
+                <button className="btn btn-primary mr-2 " onClick={handleStart} disabled={timerRunning}>Start</button>
+                <button className="btn btn-success mr-2" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
+                <button className="btn btn-link p-0 mr-2" onClick={handleEdit(task)}>
+                  <i className="fas fa-edit"></i>
+                </button>
+                <button className="btn btn-link p-0 mr-4" onClick={handleDelete}>
+                  <i className="fas fa-trash-alt"></i>
+                </button>
+              </div>
+          }
+        </div>
       </div>
     </div>
   );

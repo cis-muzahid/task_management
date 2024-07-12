@@ -16,19 +16,22 @@ const TaskList = () => {
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   };
 
+
+
+
   return (
     <>
-    <NavigationBar/>   
-     <div className="container mt-4">
-      <h2>Task List</h2>
-      <div className="row">
+      <NavigationBar />
+      <div className="container mt-4">
+        <h2>Task List</h2>
+        {/* <div className="row"> */}
         {tasks.map((task, index) => (
-          <div key={index} className="col-md-4 mb-4">
-            <TaskCard task={task} onUpdateTask={updateTask}/>
-          </div>
+            <div key={index} className="mt-5">
+              <TaskCard task={task} onUpdateTask={updateTask}/>
+            </div>
         ))}
+        {/* </div> */}
       </div>
-    </div>
     </>
 
   );
