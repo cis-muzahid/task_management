@@ -31,12 +31,8 @@ function Login() {
             const Authentication = await response.data;
             const a = storeTokensInSession(Authentication);
             if(a){
-                console.log("sddsfsdfsdfsdsd ",a)
-
-                navigate('/d');
+                navigate('/dashboard');
             }
-            // navigate('/dashboard');
-
         } catch (error) {
             console.error("Login failed:", error);
         }
