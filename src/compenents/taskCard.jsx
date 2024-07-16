@@ -89,14 +89,14 @@ const TaskCard = ({ task, onUpdateTask }) => {
         {task.isCompleted ? <span className='ml-3'>{task.timeTakenToComplete}</span>
           :
           <div>
-          <span className='mt-2 ml-4'>{formatTime(elapsedTime)}</span>
-          <span className='ml-3'>
+            <span className='mt-2 ml-4'>{formatTime(elapsedTime)}</span>
+            <span className='ml-3'>
               <a className="btn btn-sm btn-primary text-white mr-2" onClick={handleMinusMinutes}>&nbsp;-&nbsp;</a>
               {task.timeToComplete}
               <a className="btn btn-sm btn-primary text-white ml-2" onClick={handleAddMinutes}>+</a>
             </span>
-            </div>
-        } 
+          </div>
+        }
         <span className="card-title h5 ">{task.title}</span>
         <div>
           {
@@ -114,11 +114,11 @@ const TaskCard = ({ task, onUpdateTask }) => {
               <div>
                 <button className="btn btn-primary mr-2 " onClick={handleStart} disabled={timerRunning}>Start</button>
                 <button className="btn btn-success mr-2" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
-                <button className="btn btn-link p-0 mr-2" onClick={handleEdit(task)}>
-                  <i className="fas fa-edit"></i>
+                <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
+                  <i className="fas fa-edit " ></i>
                 </button>
-                <button className="btn btn-link p-0 mr-4" onClick={handleDelete}>
-                  <i className="fas fa-trash-alt"></i>
+                <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
+                  <i className="fas fa-trash-alt " ></i>
                 </button>
               </div>
           }

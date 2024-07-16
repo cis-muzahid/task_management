@@ -89,7 +89,7 @@ const CreateTaskForm = () => {
             ></textarea>
           </div>
           <div className="form-group">
-            <label htmlFor="timeToComplete">Time to Complete (hours)</label>
+            <label htmlFor="timeToComplete">Time to Complete (min)</label>
             <input
               type="number"
               className="form-control"

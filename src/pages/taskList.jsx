@@ -24,13 +24,11 @@ const TaskList = () => {
       <NavigationBar />
       <div className="container mt-4">
         <h2>Task List</h2>
-        {/* <div className="row"> */}
         {tasks.map((task, index) => (
             <div key={index} className="mt-5">
               <TaskCard task={task} onUpdateTask={updateTask}/>
             </div>
         ))}
-        {/* </div> */}
       </div>
     </>
 
