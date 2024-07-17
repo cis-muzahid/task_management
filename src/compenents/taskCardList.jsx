@@ -62,7 +62,7 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
             </span>
           </div>
         } */}
-        <span className='ml-5'>{task.timeToCompleteTask}&nbsp;<small>min</small></span>
+        <span className='ml-5'>{task.total_time_to_complete}&nbsp;<small>min</small></span>
         <span className="card-title h5 ml-5 ">{task.title}</span>
         <div>
           {task.isCompleted ? (

@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+from users.models import CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +31,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         )
         return user
 
+class CustomUserAlertTimeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['default_alert_time']
+
 from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserLoginSerializer(serializers.Serializer):
@@ -48,6 +54,16 @@ class PasswordResetSerializer(serializers.Serializer):
 class PasswordResetConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
+    new_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    new_password2 = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['new_password2']:
+            raise serializers.ValidationError({"new_password": "Passwords must match."})
+        return attrs
+    
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True, required=True)
     new_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     new_password2 = serializers.CharField(write_only=True, required=True)
 

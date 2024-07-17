@@ -1,15 +1,39 @@
 from django.db import models
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 class Task(models.Model):
+    CHOICES = {
+        ('pending','pending'),
+        ('started','started'),
+        ('completed','completed')
+    }
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-    date = models.DateField()
-    elapsed_time = models.DurationField()
-    grouping = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=255,blank=True, null=True)
+    start_time = models.DateTimeField(blank=True, null=True)
+    end_time = models.DateTimeField(blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
+    total_time_to_complete = models.PositiveIntegerField(blank=True, null=True)
+    elapsed_time = models.DurationField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=CHOICES, default='pending')
+    grouping = models.CharField(max_length=255,blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.title
+    
+    def start_task(self):
+        """Mark the task as started and set the start time."""
+        if self.status == 'pending':
+            self.status = 'started'
+            self.start_time = timezone.now()
+            self.save()
+
+    def complete_task(self):
+        """Mark the task as completed, set the end time and calculate elapsed time."""
+        if self.status == 'started':
+            self.status = 'completed'
+            self.end_time = timezone.now()
+            self.elapsed_time = self.end_time - self.start_time
+            self.save()

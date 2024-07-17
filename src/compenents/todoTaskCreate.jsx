@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
+import axios  from 'axios';
+import { TaskCreateAPI } from '../services/apiContext';
 
 const TaskCreate = ({ onAddTask }) => {
   const initialData = {
-    id: '',
     title: '',
-    notes: '',
-    timeToCompleteTask: 5
+    description: '',
+    total_time_to_complete: 0
   };
 
   const [data, setData] = useState(initialData);
   const [errors, setErrors] = useState({});
 
   const handleAddMinutes = () => {
-    setData(prevData => ({ ...prevData, timeToCompleteTask: prevData.timeToCompleteTask + 5 }));
+    setData(prevData => ({ ...prevData, total_time_to_complete: prevData.total_time_to_complete + 5 }));
   };
 
   const handleMinusMinutes = () => {
     setData(prevData => {
-      const newTimeToComplete = prevData.timeToCompleteTask - 5;
-      return newTimeToComplete >= 0 ? { ...prevData, timeToCompleteTask: newTimeToComplete } : prevData;
+      const newTimeToComplete = prevData.total_time_to_complete - 5;
+      return newTimeToComplete >= 0 ? { ...prevData, total_time_to_complete: newTimeToComplete } : prevData;
     });
   };
 
@@ -29,12 +30,13 @@ const TaskCreate = ({ onAddTask }) => {
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      const newData = { ...data, id: generateUniqueId() };
-      onAddTask(newData);
-      setData(initialData);
+
+      onAddTask(data);
+      // setData(initialData);
+      setData(initialData)
     }
   };
 
@@ -70,7 +72,7 @@ const TaskCreate = ({ onAddTask }) => {
                 <label htmlFor="timeToCompleteTask">Time(min)</label>
                 <div className="d-flex">
                   <button className="btn btn-sm btn-primary text-white mr-2" onClick={handleMinusMinutes}>&nbsp;-&nbsp;</button>
-                  <input type="text" id="timeToCompleteTask" className="form-control text-center" style={{ width: '70px' }} value={data.timeToCompleteTask} readOnly />
+                  <input type="text" id="timeToCompleteTask" className="form-control text-center" style={{ width: '70px' }} value={data.total_time_to_complete} readOnly />
                   <button className="btn btn-sm btn-primary text-white ml-2" onClick={handleAddMinutes}>+</button>
                 </div>
               </div>
@@ -79,13 +81,13 @@ const TaskCreate = ({ onAddTask }) => {
             <div className="col-md-8">
               <form onSubmit={handleSubmit} className="w-100">
                 <div className="form-row align-items-end">
-                  <div className="form-group col-md-6">
-                  <label htmlFor="title">Title</label>
-                  <input type="text" className={`form-control ${errors.title ? 'is-invalid' : ''}`} id="title" name="title" value={data.title} onChange={handleInputChange} />
-                  </div>
                   <div className="form-group col-md-4">
-                    <label htmlFor="notes">Notes</label>
-                    <input type="text" className="form-control" id="notes" name="notes" value={data.notes} onChange={handleInputChange} />
+                    <label htmlFor="title">Title</label>
+                    <input type="text" className={`form-control ${errors.title ? 'is-invalid' : ''}`} id="title" name="title" value={data.title} onChange={handleInputChange} />
+                  </div>
+                  <div className="form-group col-md-6">
+                    <label htmlFor="notes">Description</label>
+                    <input type="text" className="form-control" id="description" name="description" value={data.description} onChange={handleInputChange} />
                   </div>
                   <div className="form-group col-md-2">
                     <label htmlFor="">&nbsp;</label>
@@ -105,17 +107,17 @@ const TaskCreate = ({ onAddTask }) => {
             </div>
 
             <div className="col-md-8">
-                <div className="form-row align-items-end">
-                  <div className="form-group col-md-6">
+              <div className="form-row align-items-end">
+                <div className="form-group col-md-6">
                   <small className="text-danger">{errors.title}</small>
-                  </div>
-                  <div className="form-group col-md-4">
-
-                  </div>  
-                  <div className="form-group col-md-2">
-
-                  </div>
                 </div>
+                <div className="form-group col-md-4">
+
+                </div>
+                <div className="form-group col-md-2">
+
+                </div>
+              </div>
             </div>
           </div>
         </div>

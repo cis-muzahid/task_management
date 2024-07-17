@@ -2,12 +2,27 @@ import React, { useState, useEffect } from 'react';
 import TaskCard from '../compenents/taskCard';
 import NavigationBar from '../compenents/NavBar';
 import TaskTable from '../compenents/taskTable';
-import { TaskList } from '../services/apiContext';
+import { TaskListAPI } from '../services/apiContext';
 
 const TaskTableList = () => {
   const [tasks, setTasks] = useState([]);
+
   useEffect(() => {
-    setTasks(TaskList);
+    const fetchTasks = async () => {
+      try {
+        const response = await TaskListAPI();
+        if (response.status === 200) {
+          console.log('Task List:', response.data);
+          setTasks(response.data);
+        } else {
+          console.error('Error:', response);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchTasks();
   }, []);
 
 //   const updateTask = (updatedTask) => {

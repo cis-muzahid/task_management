@@ -1,17 +1,27 @@
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_str, force_bytes
 from django.core.mail import send_mail
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import (CustomUserSerializer, UserRegistrationSerializer, 
-                          UserLoginSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer)
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
+import jwt
+from django.conf import settings
+
+from .serializers import (
+    CustomUserSerializer, 
+    UserRegistrationSerializer, 
+    UserLoginSerializer,
+    ChangePasswordSerializer, 
+    PasswordResetSerializer, 
+    PasswordResetConfirmSerializer,
+    CustomUserAlertTimeSerializer
+)
+
 
 class UserListCreateView(generics.ListCreateAPIView):
     """
@@ -62,6 +72,7 @@ class UserLoginView(APIView):
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
+                'user_id': user.id,
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -82,10 +93,8 @@ class UserLogoutView(APIView):
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetView(APIView):
-    """
-    post:
-    Request a password reset email.
-    """
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
         serializer = PasswordResetSerializer(data=request.data)
         if serializer.is_valid():
@@ -110,10 +119,8 @@ class PasswordResetView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetConfirmView(APIView):
-    """
-    post:
-    Confirm the password reset and update the password.
-    """
+    permission_classes = [AllowAny]
+    
     def post(self, request, uid, token, *args, **kwargs):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         if serializer.is_valid():
@@ -130,3 +137,70 @@ class PasswordResetConfirmView(APIView):
                 return Response({"message": "Password has been reset successfully"}, status=status.HTTP_200_OK)
             return Response({"detail": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            if not user.check_password(serializer.validated_data['current_password']):
+                return Response({"current_password": "Current password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({"message": "Password has been changed successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+
+class GetOrUpdateAlertTimeView(APIView):
+    """
+    post:
+    Update the default alert time for the user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user 
+        serializer = CustomUserAlertTimeSerializer(user)
+        return Response(serializer.data)
+    
+    def put(self, request):
+        user = request.user 
+        serializer = CustomUserAlertTimeSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Retrieve a user instance.
+
+    put:
+    Update a user instance.
+
+    patch:
+    Partially update a user instance (e.g., update default_alert_time).
+
+    delete:
+    Delete a user instance.
+    """
+    queryset = get_user_model().objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]  # Requires authentication
+
+    def patch(self, request, *args, **kwargs):
+        user = self.get_object()
+        default_alert_time = request.data.get('default_alert_time')
+
+        if default_alert_time is not None:
+            if not isinstance(default_alert_time, int) or default_alert_time <= 0:
+                return Response({"default_alert_time": "Must be a positive integer."}, status=status.HTTP_400_BAD_REQUEST)
+            user.default_alert_time = default_alert_time
+            user.save()
+            return Response({"message": "Default alert time updated successfully"}, status=status.HTTP_200_OK)
+
+        return Response({"detail": "No fields to update."}, status=status.HTTP_400_BAD_REQUEST)
