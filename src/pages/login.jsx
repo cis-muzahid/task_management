@@ -125,7 +125,7 @@ function Login() {
 
                     <div className="col">
                         {/* Simple link */}
-                        <a href="#!">Forgot password?</a>
+                        <Link to={"/forget-password"}>Forgot password?</Link>
                     </div>
                 </div>
 
@@ -139,7 +139,7 @@ function Login() {
                     <p>
                         Not a member? <a href="#!">Register</a>
                     </p>
-                    <p>or sign up with:</p>
+                    {/* <p>or sign up with:</p>
                     <button type="button" className="btn btn-link btn-floating mx-1">
                         <i className="fab fa-facebook-f"></i>
                     </button>
@@ -154,7 +154,7 @@ function Login() {
 
                     <button type="button" className="btn btn-link btn-floating mx-1">
                         <i className="fab fa-github"></i>
-                    </button>
+                    </button> */}
                 </div>
             </form>
             </div>

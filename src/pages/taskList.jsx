@@ -20,7 +20,6 @@ const TaskList = () => {
         console.error('Error:', error);
       }
     };
-
     fetchTasks();
   }, []);
 

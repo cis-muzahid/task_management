@@ -1,4 +1,8 @@
 import axios from "axios";
+import { axiosInstanceWithInterceptors } from "./axiosInstance";
+
+
+
 
 const token = sessionStorage.getItem('usr_1a2b3c');
 
@@ -10,7 +14,7 @@ export const GetAlertTimeAPI = async () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         };
-        const response = await axios.get('http://127.0.0.1:8000/api/users/get-or-update-alert-time/', { headers });
+        const response = await axiosInstanceWithInterceptors.get('api/users/get-or-update-alert-time/', { headers });
         return response;
     } catch (error) {
         console.error('Error fetching alert time:', error);
@@ -25,7 +29,7 @@ export const UpdateAlertTimeAPI = async (data) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         };
-        const response = await axios.put('http://127.0.0.1:8000/api/users/get-or-update-alert-time/', data, { headers });
+        const response = await axiosInstanceWithInterceptors.put('api/users/get-or-update-alert-time/', data, { headers });
         return response;
     } catch (error) {
         console.error('Error updating alert time:', error);
@@ -34,14 +38,14 @@ export const UpdateAlertTimeAPI = async (data) => {
 };
 
 
-export const TaskListAPI = async () => {
+export const TaskListAPI = async (queryString) => {
     try {
         const token = sessionStorage.getItem('usr_1a2b3c');
         const headers = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         };
-        const response = await axios.get('http://127.0.0.1:8000/api/tasks/task-list-create/', { headers });
+        const response = await axiosInstanceWithInterceptors.get(`api/tasks/task-list-create/?${queryString}`, { headers });
         return response;
     } catch (error) {
         console.error('Error fetching task list:', error);
@@ -56,7 +60,23 @@ export const TaskDeleteAPI = async (id) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         };
-        const response = await axios.delete(`http://127.0.0.1:8000/api/tasks/task-delete/${id}/`, { headers });
+        const response = await axiosInstanceWithInterceptors.delete(`api/tasks/task-delete/${id}/`, { headers });
+        return response;
+    } catch (error) {
+        console.error('Error fetching task list:', error);
+        return [];
+    }
+};
+
+export const UpdateTaskAPI = async (updatedTask) => {
+    console.log(updatedTask)
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.patch(`api/tasks/tasks-update/${updatedTask.id}/`, updatedTask,{ headers });
         return response;
     } catch (error) {
         console.error('Error fetching task list:', error);
@@ -73,7 +93,7 @@ export const UserDetailAPI = async () => {
           'Authorization': `Bearer ${token}`
         };
         console.log(user_id)
-        const response = await axios.get(`http://127.0.0.1:8000/api/users/${user_id}/`, { headers });
+        const response = await axiosInstanceWithInterceptors.get(`api/users/update-or-get-user/`, { headers });
         return response;
     } catch (error) {
         console.error('Error fetching task list:', error);
@@ -90,7 +110,7 @@ export const TaskCreateAPI = async (formData) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const response = await axios.post('http://127.0.0.1:8000/api/tasks/task-list-create/', formData, {headers});
+        const response = await axiosInstanceWithInterceptors.post('api/tasks/task-list-create/', formData, {headers});
         return response;
     } catch (error) {
         console.error('Error creating task:', error);

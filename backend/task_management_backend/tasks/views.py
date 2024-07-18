@@ -6,6 +6,7 @@ from django.utils import timezone
 from .models import Task
 from .serializers import TaskSerializer
 from users.serializers import CustomUserSerializer
+from django.utils.dateparse import parse_date
 
 class TaskListCreateView(generics.ListCreateAPIView):
     serializer_class = TaskSerializer
@@ -13,11 +14,35 @@ class TaskListCreateView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+        user = self.request.user
+        queryset = Task.objects.filter(user=user)
+
+        date = self.request.query_params.get('date')
+        status = self.request.query_params.getlist('status')
+
+        if date:
+            try:
+                parsed_date = parse_date(date)
+                if parsed_date:
+                    queryset = queryset.filter(start_time__date=parsed_date)
+                else:
+                    return queryset.none()
+            except ValueError:
+                return queryset.none()
+
+        if status:
+            queryset = queryset.filter(status__in=status)
+
+        return queryset
 
     def perform_create(self, serializer):
         user = self.request.user
         serializer.save(user=user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class TaskDeleteView(generics.DestroyAPIView):
     queryset = Task.objects.all()
@@ -32,6 +57,25 @@ class TaskDeleteView(generics.DestroyAPIView):
         except Task.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+class TaskUpdateView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        if 'status' in serializer.validated_data:
+            if serializer.validated_data['status'] == 'started' and instance.status == 'pending':
+                instance.start_task()
+            elif serializer.validated_data['status'] == 'completed' and instance.status == 'started':
+                instance.complete_task()
+
+        self.perform_update(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TaskSerializer
@@ -39,13 +83,12 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        # Ensure that only tasks for the authenticated user are returned
         return Task.objects.filter(user=self.request.user)
 
     def perform_update(self, serializer):
-        # Ensure that the task is assigned to the authenticated user
         user = self.request.user
         serializer.save(user=user)
+
 
 class MultipleTaskUpdateView(APIView):
     permission_classes = [permissions.IsAuthenticated]

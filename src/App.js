@@ -9,26 +9,8 @@ import { AuthProvider } from './services/AuthContext';
 import PrivateRoute from './services/PrivateRoute';
 import TaskTableList from './pages/dataTable';
 import Settings from './pages/settings';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <BrowserRouter>
-//         <Routes>
-//           <Route path="/dashboard" element={<Dashboard />}/>
-//           <Route path="/create-task" element={<CreateTaskForm />} />
-//           <Route path="/task-list" element={<TaskList />} />
-//           <Route path="/login" element={<Login />} />
-
-//           {/* <Route path="blogs" element={<Blogs />} />
-//           <Route path="contact" element={<Contact />} />
-//           <Route path="*" element={<NoPage />} /> */}
-//         </Routes>
-//       </BrowserRouter>
-//     </div>
-//   );
-// }
-
+import Register from './pages/register';
+import ForgotPassword from './pages/forgotPassword';
 
 const App = () => {
   return (
@@ -45,6 +27,9 @@ const App = () => {
             }
           />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forget-password" element={<ForgotPassword />} />
+
           <Route
             path="/create-task"
             element={

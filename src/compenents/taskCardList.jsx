@@ -11,14 +11,14 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
         onStartTask(task);
     };
 
-  const handleComplete = () => {
-    setTimerRunning(false);
-    const end = new Date();
-    const minutes = Math.floor(elapsedTime / 60) || '00';
-    const seconds = elapsedTime % 60 || '00';
-    const updatedTask = { ...task, timeTakenToComplete: `00:${minutes}:${seconds}`, endDate: end.toLocaleTimeString(), isCompleted: true };
-    onUpdateTask(updatedTask);
-  };
+  // const handleComplete = () => {
+  //   setTimerRunning(false);
+  //   const end = new Date();
+  //   const minutes = Math.floor(elapsedTime / 60) || '00';
+  //   const seconds = elapsedTime % 60 || '00';
+  //   const updatedTask = { ...task, timeTakenToComplete: `00:${minutes}:${seconds}`, endDate: end.toLocaleTimeString(), isCompleted: true };
+  //   onUpdateTask(updatedTask);
+  // };
 
   const handleDelete = () => {
     onDeleteTask(task.id);
@@ -77,11 +77,11 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
             </div>
           ) : (
             <div>
-              <button className="btn btn-primary mr-2 " onClick={handleStart} disabled={timerRunning}>Start</button>
-              <button className="btn btn-success mr-2" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
+              <button className="btn btn-primary mr-2 " onClick={handleStart} >Start</button>
+              {/* <button className="btn btn-success mr-2" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
               <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
                 <i className="fas fa-edit " ></i>
-              </button>
+              </button> */}
               <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
                 <i className="fas fa-trash-alt " ></i>
               </button>

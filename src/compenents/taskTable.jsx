@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 
 const TaskTable = ({ data }) => {
-    const [statusFilter, setStatusFilter] = useState('');
-    const [dateFilter, setDateFilter] = useState('');
+    // const [statusFilter, setStatusFilter] = useState('');
+    // const [dateFilter, setDateFilter] = useState('');
     const [selectedTasks, setSelectedTasks] = useState([]);
 
-    const handleStatusChange = (e) => {
-        setStatusFilter(e.target.value);
-    };
+    // const handleStatusChange = (e) => {
+    //     setStatusFilter(e.target.value);
+    // };
 
-    const handleDateChange = (e) => {
-        setDateFilter(e.target.value);
-    };
-
+    // const handleDateChange = (e) => {
+    //     setDateFilter(e.target.value);
+    // };
     const handleTaskSelection = (taskId) => {
         const selectedIndex = selectedTasks.indexOf(taskId);
         let newSelectedTasks = [];
@@ -33,30 +32,29 @@ const TaskTable = ({ data }) => {
         setSelectedTasks(newSelectedTasks);
     };
 
-    const handleDeleteSelected = () => {
-        // Example function to delete selected tasks
-        console.log('Deleting selected tasks:', selectedTasks);
-        // Implement your delete logic here
-        // Example: Call an API to delete tasks by IDs in selectedTasks
-    };
+    // const handleDeleteSelected = () => {
+    //     // Example function to delete selected tasks
+    //     console.log('Deleting selected tasks:', selectedTasks);
+    //     // Implement your delete logic here
+    //     // Example: Call an API to delete tasks by IDs in selectedTasks
+    // };
 
-    const handleUpdateSelected = () => {
-        // Example function to update selected tasks
-        console.log('Updating selected tasks:', selectedTasks);
-        // Implement your update logic here
-        // Example: Open a modal or form to update tasks in selectedTasks
-    };
+    // const handleUpdateSelected = () => {
+    //     // Example function to update selected tasks
+    //     console.log('Updating selected tasks:', selectedTasks);
+    //     // Implement your update logic here
+    //     // Example: Open a modal or form to update tasks in selectedTasks
+    // };
 
-    const filteredData = data.filter((task) => {
-        const dateMatch = dateFilter ? task.date.includes(dateFilter) : true;
-        const statusMatch = statusFilter ? task.status === statusFilter : true;
-        return dateMatch && statusMatch;
-    });
+    // const filteredData = data.filter((task) => {
+    //     const dateMatch = dateFilter ? task.date.includes(dateFilter) : true;
+    //     const statusMatch = statusFilter ? task.status === statusFilter : true;
+    //     return dateMatch && statusMatch;
+    // });
 
     return (
         <div className="container mt-5">
-            <h1>Tasks</h1>
-            <div className="row d-flex justify-content-end mb-3">
+            {/* <div className="row d-flex justify-content-end mb-3">
                 <div className="col-auto">
                     <button className="btn btn-danger mr-2" onClick={handleDeleteSelected} disabled={selectedTasks.length === 0}>
                         Delete Selected
@@ -102,17 +100,17 @@ const TaskTable = ({ data }) => {
                         />
                     </div>
                 </div>
-            </div>
+            </div> */}
             <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col"></th>
+                        <th></th>
                         <th scope="col">Title</th>
                         <th scope="col">Description</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredData.map((task, index) => (
+                    {data.map((task, index) => (
                         <tr key={index}>
                             <td>
                                 <input

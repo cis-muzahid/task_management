@@ -17,6 +17,9 @@ function ProfileInfo({userdetail,showModal,handleShowModal,UpdateAlertTime, hand
                             <span>Default alert time - &nbsp;{userdetail.default_alert_time}&nbsp;min</span>
                             <button className="btn btn-sm btn-outline-primary ml-5" onClick={handleShowModal}>Update</button>
                         </div>
+                        <div className="text-muted mb-4">
+                            <button className="btn btn-sm btn-outline-primary ml-5" onClick={handleShowModal}>Change Passowrd</button>
+                        </div>
                     </div>
                 </div>
             </div>

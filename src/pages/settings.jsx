@@ -12,7 +12,7 @@ function Settings() {
             try {
                 const response = await UserDetailAPI();
                 if (response.status === 200) {
-                    console.log('Task List:', response.data);
+                    console.log('user detail:', response.data);
                     setUserdetail(response.data);
                 } else {
                     console.error('Error:', response);

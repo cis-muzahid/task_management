@@ -22,5 +22,5 @@ urlpatterns = [
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('get-or-update-alert-time/', GetOrUpdateAlertTimeView.as_view(), name='get-or-update-alert-time'),
     path('', UserListCreateView.as_view(), name='user-list-create'),
-    path('<int:pk>/', UserRetrieveUpdateDestroyView.as_view(), name='user-detail'),
+    path('update-or-get-user/', UserRetrieveUpdateDestroyView.as_view(), name='user-detail'),
 ]

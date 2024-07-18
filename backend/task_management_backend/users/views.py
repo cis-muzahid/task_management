@@ -191,7 +191,10 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [IsAuthenticated]  # Requires authentication
-
+    
+    def get_object(self):
+        return self.request.user
+    
     def patch(self, request, *args, **kwargs):
         user = self.get_object()
         default_alert_time = request.data.get('default_alert_time')

@@ -22,14 +22,8 @@ function NavigationBar() {
           <li className="nav-item active">
             <Link className="nav-link" to={"/dashboard"}>Dashboard <span className="sr-only">(current)</span></Link>
           </li>
-          <li className="nav-item">
-            <Link className="nav-link" to={'/create-task'}>Create Task</Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to={'/task-list'}>Task List</Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to={'/task-table'}>Task Table</Link>
+          <li className="nav-item ml-3">
+            <Link className="nav-link" to={'/task-table'}>All Tasks</Link>
           </li>
           {/* <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios  from 'axios';
-import { TaskCreateAPI } from '../services/apiContext';
+import { GetAlertTimeAPI, TaskCreateAPI } from '../services/apiContext';
 
-const TaskCreate = ({ onAddTask }) => {
+const TaskCreate = ({ onAddTask, timeTocomplete}) => {
   const initialData = {
     title: '',
     description: '',
-    total_time_to_complete: 0
+    total_time_to_complete:''
   };
+  
 
   const [data, setData] = useState(initialData);
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    console.log("ccccccccccc",timeTocomplete)
+    setData(prevData => ({ ...prevData, total_time_to_complete: Number(localStorage.getItem('time_to_complete')) }));
+  },[])
 
   const handleAddMinutes = () => {
     setData(prevData => ({ ...prevData, total_time_to_complete: prevData.total_time_to_complete + 5 }));
@@ -36,7 +42,7 @@ const TaskCreate = ({ onAddTask }) => {
 
       onAddTask(data);
       // setData(initialData);
-      setData(initialData)
+      setData(prevData => ({ ...prevData, total_time_to_complete: Number(localStorage.getItem('time_to_complete')),title:'',description:'' }));
     }
   };
 

@@ -1,33 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import './taskList.css';
 
-const TaskStarted = ({task,timerRunning}) => {
-  const [elapsedTime, setElapsedTime] = useState(0);
+const TaskStarted = ({ task, timerRunning,onHandleComplete }) => {
 
-  useEffect(() => {
-    let interval;
-    if (timerRunning) {
-      const start = new Date();
-      // setStartTime(start.toLocaleTimeString());
-      interval = setInterval(() => {
-        const now = new Date();
-        const elapsed = Math.floor((now - start) / 1000);
-        setElapsedTime(elapsed);
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [timerRunning]);
+  // const handleComplete = () => {
+  //   // setTimerRunning(false);
+  //   const end = new Date();
+  //   const minutes = Math.floor(elapsedTime / 60) || '00';
+  //   const seconds = elapsedTime % 60 || '00';
+  //   const updatedTask = { ...task, timeTakenToComplete: `00:${minutes}:${seconds}`, endDate: end.toLocaleTimeString(), isCompleted: true };
+  //   // onUpdateTask(updatedTask);
+  // };
+  
 
   const handleComplete = () => {
-    // setTimerRunning(false);
-    const end = new Date();
-    const minutes = Math.floor(elapsedTime / 60) || '00';
-    const seconds = elapsedTime % 60 || '00';
-    const updatedTask = { ...task, timeTakenToComplete: `00:${minutes}:${seconds}`, endDate: end.toLocaleTimeString(), isCompleted: true };
-    // onUpdateTask(updatedTask);
+     onHandleComplete(task);
   };
 
   const handleDelete = () => {
@@ -40,44 +27,76 @@ const TaskStarted = ({task,timerRunning}) => {
     return `00:${mins}:${secs}`;
   };
 
-console.log(task)
+  const formatDateToDisplay = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+};
+
   return (
-    <div className="card justify-content-center">
-      <div className="d-flex justify-content-between align-items-start mt-3 mb-3">
-         {/* <span className='ml-3'>{''}</span> */}
-            <span className='mt-2 ml-4'>{formatTime(elapsedTime)}</span>
-          <div>
-            <span className='ml-3'>
-            </span> 
+    <>
+      <div className='container mt-5'>
+        <div className="card">
+          <div className="card-body">
+            <div className="row align-items-center">
+              <div className="col-md-4">
+                <div className="form-group">
+                  <label htmlFor="timeToCompleteTask">Started time</label>
+                    <div className="card-title">{formatDateToDisplay(task.start_time)}</div>
+                </div>
+              </div>
+
+              <div className="col-md-8">
+                <div className="form-row align-items-end">
+                  <div className="form-group col-md-4">
+                    <label htmlFor="title">Title</label>
+                    <div className="card-title h5 ">{task.title}</div>
+                  </div>
+                  <div className="form-group col-md-6">
+                    <label htmlFor="notes">Description</label>
+                    <div className="card-title h5 ">{task.description ? task.description : ''}</div>
+                  </div>
+                  <div className="form-group col-md-2">
+                    {/* <label htmlFor="">&nbsp;</label> */}
+                    <button className="btn btn-success mr-2" onClick={handleComplete} >Complete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* <div className="row align-items-center">
+              <div className="col-md-4">
+                <div className="form-group">
+                  <div className="d-flex">
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-8">
+                <div className="form-row align-items-end">
+                  <div className="form-group col-md-6">
+                    <small className="text-danger">{ }</small>
+                  </div>
+                  <div className="form-group col-md-4">
+
+                  </div>
+                  <div className="form-group col-md-2">
+
+                  </div>
+                </div>
+              </div>
+            </div> */}
           </div>
-        
-        <span className='ml-5'>&nbsp;<small>{}</small></span>
-        <span className="card-title h5 ml-5 ">{task.title}</span>
-        <div>
-          {task.status == 'completed' ? (
-            <div>
-              <button className="btn btn-success mr-2" disabled>Completed</button>
-              <button className="btn btn-link p-0 mr-2" onClick={() => console.log('Edit Task')}>
-                <i className="fas fa-edit"></i>
-              </button>
-              <button className="btn btn-link p-0 mr-4" onClick={handleDelete}>
-                <i className="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          ) : (
-            <div>
-              <button className="btn btn-success mr-2" onClick={handleComplete} >Complete</button>
-              <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
-                <i className="fas fa-edit " ></i>
-              </button>
-              <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
-                <i className="fas fa-trash-alt " ></i>
-              </button>
-            </div>
-          )}
         </div>
       </div>
-    </div>
+    </>
+
   );
 };
 
