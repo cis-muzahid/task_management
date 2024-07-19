@@ -125,3 +125,10 @@ SIMPLE_JWT = {
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'testmuz1234@gmail.com'
+EMAIL_HOST_PASSWORD ='cis@12345'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AlertModel from "../compenents/alertModel";
 
 function ForgotPassword() {
     const navigate = useNavigate();
@@ -8,6 +9,9 @@ function ForgotPassword() {
     const [formData, setFormData] = useState({
         email: ""
     });
+
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
 
     const handleInput = (event) => {
         const { name, value } = event.target;
@@ -22,13 +26,14 @@ function ForgotPassword() {
             return;
         }
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/users/forgot-password/', formData);
+            console.log(formData)
+            const response = await axios.post('http://127.0.0.1:8000/api/users/password-reset/', formData);
             console.log(response);
-            // Handle success response here (e.g., display a success message, redirect, etc.)
-            navigate('/password-reset-success'); // Example redirect after successful password reset request
+            setModalMessage(response.data.message)
+            setShowModal(true)
+            // navigate('/password-reset-success'); 
         } catch (error) {
             console.error("Password reset failed:", error);
-            // Handle error response here (e.g., display an error message)
             if (error.response && error.response.data) {
                 setEmailError(error.response.data.email || "An error occurred. Please try again.");
             } else {
@@ -48,30 +53,36 @@ function ForgotPassword() {
         return isValid;
     };
 
+    const handleCloseModal = () => {
+        setShowModal(false)
+    }
     return (
-        <div className="container mt-5 d-flex justify-content-center">
-            <div className="card border-0 shadow" style={{ width: '18rem' }}>
-                <div className="card-title h3 mb-5">Forgot Password</div>
-                <form onSubmit={handleSubmit} className="text-left">
-                    <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            className="form-control"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInput}
-                            required
-                        />
-                        {emailError && <div className="text-danger">{emailError}</div>}
-                    </div>
-                    <button type="submit" className="btn btn-primary btn-block mb-4">
-                        Submit
-                    </button>
-                </form>
+        <>
+            <div className="container mt-5 d-flex justify-content-center">
+                <div className="card border-0 shadow" style={{ width: '18rem' }}>
+                    <div className="card-title h3 mb-5">Forgot Password</div>
+                    <form onSubmit={handleSubmit} className="text-left">
+                        <div className="form-outline mb-4">
+                            <label className="form-label" htmlFor="email">Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                className="form-control"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInput}
+                                required
+                            />
+                            {emailError && <div className="text-danger">{emailError}</div>}
+                        </div>
+                        <button type="submit" className="btn btn-primary btn-block mb-4">
+                            Submit
+                        </button>
+                    </form>
+                </div>
             </div>
-        </div>
+            <AlertModel showModal={showModal} modalMessage={modalMessage} handleCloseModal={handleCloseModal} />
+        </>
     );
 }
 
