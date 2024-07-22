@@ -3,15 +3,14 @@ import NavigationBar from "../compenents/NavBar";
 import TaskCreate from "../compenents/todoTaskCreate";
 import TaskCard from "../compenents/taskCardList";
 import TaskStarted from "../compenents/TaskStarted";
-import { GetAlertTimeAPI, TaskCreateAPI, TaskDeleteAPI, TaskListAPI, UpdateTaskAPI } from "../services/apiContext";
+import { GetAlertTimeAPI, GetTaskTitleAPI, TaskCreateAPI, TaskDeleteAPI, TaskListAPI, UpdateTaskAPI } from "../services/apiContext";
 import AlertModel from "../compenents/alertModel";
 
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [pendingTasks, setPendingTasks] = useState([]);
   const [startedTask, setStartedTask] = useState({});
-
-
+  const [taskTitles,setTaskTitles] = useState([])
 
 
   const [timerRunning, setTimerRunning] = useState(false);
@@ -49,6 +48,7 @@ function Dashboard() {
           if (pendingTask) {
             setPendingTasks(pendingTask)
           }
+          console.log(startedTask)
           if (startedTask) {
             setStartedTask(startedTask);
             const startTime = new Date(startedTask.start_time).getTime();
@@ -83,39 +83,127 @@ function Dashboard() {
       }
     };
     fetchAlertTime();
+
+    const fetchTaskTitle = async () => {
+      try {
+        const response = await GetTaskTitleAPI();
+        if (response.status === 200) {
+          console.log(response.data)
+          setTaskTitles(response.data)
+        } else {
+          console.error('Error:', response);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    fetchTaskTitle();
     console.log(startedTask)
     setStartedTask({});
 
   }, []);
 
+  // const addTask = async (newTask) => {
+  //   try {
+  //     console.log('newTask=====', newTask)
+  //     const response = await TaskCreateAPI(newTask);
+  //     if (response.status === 201) {
+  //       console.log('Task Created:', response.data);
+  //       const updatedTasks = [...tasks, response.data];
+  //       const createdTask = response.data
+  //       setTasks(updatedTasks);
+
+  //       const completedTask = { ...startedTask, end_time: new Date().toISOString(), status: 'completed' };
+  //       console.log("Task completed:", completedTask);
+  //       try {
+  //         const response = await UpdateTaskAPI(completedTask);
+  //         if (response.status === 200) {
+  //           console.log('started Task List:', response.data);
+  //           setStartedTask(createdTask);
+  //           setTimerRunning(true);
+  //           localStorage.setItem('startTime', new Date().getTime());
+  //           localStorage.setItem('elapsedTime', 0);
+  //         } else {
+  //           console.error('Error:', response);
+  //         }
+  //       } catch (error) {
+  //         console.error('Error:', error);
+  //       }
+
+  //       // setStartedTask(response.data);
+  //       if (response.data) {
+  //         const startTime = new Date(response.data.start_time).getTime();
+  //         const currentTime = new Date().getTime();
+  //         // const savedElapsedTime = localStorage.getItem('elapsedTime') || 0;
+  //         const timeElapsed = 0
+  //         setElapsedTime(timeElapsed);
+  //         setTimerRunning(true);
+  //         console.log("ttt==", elapsedTime)
+  //       }
+
+  //     } else {
+  //       console.error('Error:', response);
+  //     }
+
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
+
   const addTask = async (newTask) => {
     try {
-      console.log('newTask=====', newTask)
+      console.log('newTask=====', newTask);
       const response = await TaskCreateAPI(newTask);
-      if (response.status === 201) {
-        console.log('Task Created:', response.data);
-        const updatedTasks = [...tasks, response.data];
-        setTasks(updatedTasks);
-      } else {
+      if (response.status !== 201) {
         console.error('Error:', response);
+        return;
       }
+  
+      console.log('Task Created:', response.data);
+      const createdTask = response.data;
+      const updatedTasks = [...tasks, createdTask];
+      setTasks(updatedTasks);
+  
+      if (!isEmptyObject(startedTask)) {
+        await completeCurrentTask();
+      }
+  
+      await startNewTask(createdTask);
+  
     } catch (error) {
       console.error('Error:', error);
     }
   };
-
-  const updateTask = (updatedTask) => {
-    const updatedTasks = tasks.map(t => (t.id === updatedTask.id ? updatedTask : t));
-    setTasks(updatedTasks);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-  };
-
-  const deleteTask = async (taskId) => {
+  
+  const completeCurrentTask = async () => {
+    const completedTask = { ...startedTask, end_time: new Date().toISOString(), status: 'completed' };
+    console.log("Task completed:", completedTask);
     try {
-      const response = await TaskDeleteAPI(taskId);
-      if (response.status === 204) {
-        const updatedTasks = tasks.filter(t => t.id !== taskId);
-        setTasks(updatedTasks);
+      const response = await UpdateTaskAPI(completedTask);
+      if (response.status === 200) {
+        console.log('Completed Task:', response.data);
+        setStartedTask({});
+        setTimerRunning(false);
+        setElapsedTime(0);
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+  const startNewTask = async (task) => {
+    const updatedTask = { ...task, start_time: new Date().toISOString(), status: 'started' };
+    console.log("Task started:", updatedTask);
+    try {
+      const response = await UpdateTaskAPI(updatedTask);
+      if (response.status === 200) {
+        console.log('Started Task:', response.data);
+        setStartedTask(response.data);
+        setTimerRunning(true);
+        localStorage.setItem('startTime', new Date().getTime());
+        localStorage.setItem('elapsedTime', 0);
       } else {
         console.error('Error:', response);
       }
@@ -124,43 +212,63 @@ function Dashboard() {
     }
   };
 
-  const startTask = (task) => {
-    if (isEmptyObject(startedTask)) {
-      const currentDateTime = new Date().toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-      });
-      const updatedTask = { ...task, start_time: new Date().toISOString(), status: 'started' };
-      console.log("Task started:", updatedTask);
+  // const updateTask = (updatedTask) => {
+  //   const updatedTasks = tasks.map(t => (t.id === updatedTask.id ? updatedTask : t));
+  //   setTasks(updatedTasks);
+  //   localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+  // };
 
-      const updateTask = async () => {
-        try {
-          const response = await UpdateTaskAPI(updatedTask);
-          if (response.status === 200) {
-            console.log('started Task List:', response.data);
-            setStartedTask(response.data);
-            setTimerRunning(true);
-            localStorage.setItem('startTime', new Date().getTime());
-            localStorage.setItem('elapsedTime', 0);
-          } else {
-            console.error('Error:', response);
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      };
-      updateTask();
+  // const deleteTask = async (taskId) => {
+  //   try {
+  //     const response = await TaskDeleteAPI(taskId);
+  //     if (response.status === 204) {
+  //       const updatedTasks = tasks.filter(t => t.id !== taskId);
+  //       setTasks(updatedTasks);
+  //     } else {
+  //       console.error('Error:', response);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
 
-    } else {
-      setModalMessage("A task is already running. Please complete the current task before starting a new one.");
-      setShowModal(true);
-    }
-  };
+  // const startTask = (task) => {
+  //   if (isEmptyObject(startedTask)) {
+  //     const currentDateTime = new Date().toLocaleString('en-US', {
+  //       year: 'numeric',
+  //       month: '2-digit',
+  //       day: '2-digit',
+  //       hour: '2-digit',
+  //       minute: '2-digit',
+  //       second: '2-digit',
+  //       hour12: false,
+  //     });
+  //     const updatedTask = { ...task, start_time: new Date().toISOString(), status: 'started' };
+  //     console.log("Task started:", updatedTask);
+
+  //     const updateTask = async () => {
+  //       try {
+  //         const response = await UpdateTaskAPI(updatedTask);
+  //         if (response.status === 200) {
+  //           console.log('started Task List:', response.data);
+  //           setStartedTask(response.data);
+  //           setTimerRunning(true);
+  //           localStorage.setItem('startTime', new Date().getTime());
+  //           localStorage.setItem('elapsedTime', 0);
+  //         } else {
+  //           console.error('Error:', response);
+  //         }
+  //       } catch (error) {
+  //         console.error('Error:', error);
+  //       }
+  //     };
+  //     updateTask();
+
+  //   } else {
+  //     setModalMessage("A task is already running. Please complete the current task before starting a new one.");
+  //     setShowModal(true);
+  //   }
+  // };
 
 
   const CompleteTask = async (task) => {
@@ -175,6 +283,7 @@ function Dashboard() {
         setElapsedTime(0)
         setModalMessage("Task completed successfully!");
         setShowModal(true);
+        return response
       } else {
         console.error('Error:', response);
       }
@@ -219,15 +328,15 @@ function Dashboard() {
       </div>
 
       <div className="text-center mt-5 h1">Create Task</div>
-      <TaskCreate onAddTask={addTask}/>
-      <div className="container">
+      <TaskCreate onAddTask={addTask} taskTitles={taskTitles}/>
+      {/* <div className="container">
         <div className="text-center mt-5 h1">TODOS</div>
         {tasks.map((task, index) => (
           <div key={index} className="mt-2">
             <TaskCard task={task} onUpdateTask={updateTask} onDeleteTask={deleteTask} onStartTask={startTask} />
           </div>
         ))}
-      </div>
+      </div> */}
       <AlertModel handleCloseModal={handleCloseModal} showModal={showModal} modalMessage={modalMessage} />
     </>
   );

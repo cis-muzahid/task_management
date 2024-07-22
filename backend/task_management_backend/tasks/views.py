@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
-from .models import Task
-from .serializers import TaskSerializer
+from .models import Task, TaskTitle
+from .serializers import TaskSerializer,TaskTitleSerializer
 from users.serializers import CustomUserSerializer
 from django.utils.dateparse import parse_date
 
@@ -37,7 +37,8 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        serializer.save(user=user)
+        start_time = timezone.now()
+        serializer.save(user=user,start_time=start_time)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -145,3 +146,28 @@ class TaskStartStopView(APIView):
 
         else:
             return Response({"detail": "Invalid action. Use 'start' or 'stop'."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TaskTitleListView(generics.ListAPIView):
+    serializer_class = TaskTitleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return TaskTitle.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        task_titles = [task['name'] for task in serializer.data]
+        return Response(task_titles)
+    
+
+class TaskTitleCreateView(generics.CreateAPIView):
+    serializer_class = TaskTitleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)

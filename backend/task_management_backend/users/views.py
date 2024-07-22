@@ -96,6 +96,7 @@ class PasswordResetView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
+        breakpoint()
         serializer = PasswordResetSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
@@ -106,7 +107,8 @@ class PasswordResetView(APIView):
                 return Response({"detail": "User with this email does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
             token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            uid = urlsafe_base64_encode(force_bytes(user.id))
+            print(token,uid)
             reset_link = f'http://localhost:8000/api/users/reset-password-confirm/{uid}/{token}/'
             send_mail(
                 'Password Reset Request',

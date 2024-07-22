@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task
+from .models import Task,TaskTitle
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,3 +17,9 @@ class MultipleTaskUpdateSerializer(serializers.Serializer):
                 setattr(task, attr, value)
             task.save()
         return instance
+
+
+class TaskTitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskTitle
+        fields = ['id', 'name']

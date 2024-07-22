@@ -3,6 +3,7 @@ import TaskCard from '../compenents/taskCardList';
 import NavigationBar from '../compenents/NavBar';
 import TaskTable from '../compenents/taskTable';
 import { TaskListAPI } from '../services/apiContext';
+import UpdateTaskModal from '../compenents/updateTaskModel';
 
 const TaskTableList = () => {
   const [tasks, setTasks] = useState([]);
@@ -10,6 +11,9 @@ const TaskTableList = () => {
     status: [],
     date: ''
   });
+  const [showTaskUpdateModal, setShowTaskUpdateModal] = useState(false);
+  const [taskToUpdate, setTaskToUpdate] = useState({});
+
 
   const fetchTasks = async (queryParams = {}) => {
     try {
@@ -59,7 +63,6 @@ const TaskTableList = () => {
     setFilters(newFilters);
   };
 
-
   const createQueryString = (data) => {
     const params = new URLSearchParams();
     for (const key in data) {
@@ -73,6 +76,20 @@ const TaskTableList = () => {
     }
     return params.toString();
   };
+
+  const handleUpdateTask = (data) => {
+    console.log(data)
+    alert("hdfgsd")
+  }
+
+  const handleShowTaskUpdateModal = (data) =>{
+    setShowTaskUpdateModal(true);
+    setTaskToUpdate(data)
+  } 
+  const CloseShowTaskUpdateModal = () => {
+    setShowTaskUpdateModal(false);
+    setTaskToUpdate({})
+  }
 
   return (
     <>
@@ -121,7 +138,13 @@ const TaskTableList = () => {
         </div>
       </div>
 
-      <TaskTable data={tasks} />
+      <TaskTable data={tasks} handleShowTaskUpdateModal={handleShowTaskUpdateModal}/>
+      <UpdateTaskModal
+          show={showTaskUpdateModal}
+          handleClose={CloseShowTaskUpdateModal}
+          handleUpdate={handleUpdateTask}
+          taskToUpdate={taskToUpdate}
+      />
     </>
   );
 };

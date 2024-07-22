@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const TaskTable = ({ data }) => {
+const TaskTable = ({ data, handleShowTaskUpdateModal }) => {
     // const [statusFilter, setStatusFilter] = useState('');
     // const [dateFilter, setDateFilter] = useState('');
     const [selectedTasks, setSelectedTasks] = useState([]);
@@ -12,6 +12,9 @@ const TaskTable = ({ data }) => {
     // const handleDateChange = (e) => {
     //     setDateFilter(e.target.value);
     // };
+    const handleUpdate = () => {
+        handleShowTaskUpdateModal(data)
+    }
     const handleTaskSelection = (taskId) => {
         const selectedIndex = selectedTasks.indexOf(taskId);
         let newSelectedTasks = [];
@@ -107,6 +110,7 @@ const TaskTable = ({ data }) => {
                         <th></th>
                         <th scope="col">Title</th>
                         <th scope="col">Description</th>
+                        <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,6 +125,11 @@ const TaskTable = ({ data }) => {
                             </td>
                             <td>{task.title}</td>
                             <td>{task.description}</td>
+                            <td>
+                                <button className="btn btn-sm btn-outline-primary mr-2" onClick={handleUpdate}>
+                                    <i className="fas fa-edit " ></i>
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

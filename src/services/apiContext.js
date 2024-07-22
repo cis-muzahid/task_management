@@ -117,3 +117,48 @@ export const TaskCreateAPI = async (formData) => {
         throw error; 
     }
 };
+
+export const GetTaskTitleAPI = async () => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.get('api/tasks/task-titles/', {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+
+export const CreateTaskTitleAPI = async (data) => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.post('api/tasks/task-title-create/',data, {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+
+export const ChangePasswordAPI = async (data) => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.post('api/users/change-password/',data, {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};

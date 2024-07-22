@@ -26,12 +26,19 @@ function ForgotPassword() {
             return;
         }
         try {
-            console.log(formData)
-            const response = await axios.post('http://127.0.0.1:8000/api/users/password-reset/', formData);
-            console.log(response);
-            setModalMessage(response.data.message)
-            setShowModal(true)
-            // navigate('/password-reset-success'); 
+            console.log("Form Data:", formData);
+            const response = await axios.post(
+                'http://127.0.0.1:8000/api/users/password-reset/', 
+                formData, 
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log("Response:", response);
+            setModalMessage(response.data.message);
+            setShowModal(true);
         } catch (error) {
             console.error("Password reset failed:", error);
             if (error.response && error.response.data) {
@@ -54,8 +61,9 @@ function ForgotPassword() {
     };
 
     const handleCloseModal = () => {
-        setShowModal(false)
-    }
+        setShowModal(false);
+    };
+
     return (
         <>
             <div className="container mt-5 d-flex justify-content-center">
