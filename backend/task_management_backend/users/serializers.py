@@ -13,9 +13,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
 
-    class Meta: 
+    class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'password', 'password2', 'default_alert_time']
+        fields = ['email', 'password', 'password2']
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -23,11 +23,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        email = validated_data['email']
+        username = email.split('@')[0]  # Extract the username from the email
+        password = validated_data['password']
+        
         user = get_user_model().objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            default_alert_time=validated_data['default_alert_time']
+            username=username,
+            email=email,
+            password=password,
+            default_alert_time=10  # Set default alert time to 10
         )
         return user
 

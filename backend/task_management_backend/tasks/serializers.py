@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task,TaskTitle
+from .models import Task,TaskTitle,ToDoTask
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,3 +23,10 @@ class TaskTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskTitle
         fields = ['id', 'name']
+
+
+class ToDoTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ToDoTask
+        fields = '__all__'
+        read_only_fields = ['user']

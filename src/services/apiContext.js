@@ -162,3 +162,64 @@ export const ChangePasswordAPI = async (data) => {
         throw error; 
     }
 };
+
+export const TodoCreateAPI = async (data) => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.post('api/tasks/todo-list-create/',data, {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+
+export const TodoListAPI = async () => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.get('api/tasks/todo-list-create/', {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+
+export const TodoDeleteAPI = async (id) => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.delete(`http://127.0.0.1:8000/api/tasks/todo-retrieve-delete-update/${id}/`, {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+
+export const TodoUpdateAPI = async (todo) => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.patch(`http://127.0.0.1:8000/api/tasks/todo-retrieve-delete-update/${todo.id}/`,todo, {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+

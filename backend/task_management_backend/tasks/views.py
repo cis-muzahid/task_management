@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
-from .models import Task, TaskTitle
-from .serializers import TaskSerializer,TaskTitleSerializer
+from .models import Task, TaskTitle, ToDoTask
+from .serializers import TaskSerializer,TaskTitleSerializer,ToDoTaskSerializer
 from users.serializers import CustomUserSerializer
 from django.utils.dateparse import parse_date
 
@@ -19,6 +19,7 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
         date = self.request.query_params.get('date')
         status = self.request.query_params.getlist('status')
+        search = self.request.query_params.get('search', '')
 
         if date:
             try:
@@ -32,6 +33,9 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
         if status:
             queryset = queryset.filter(status__in=status)
+
+        if search:
+            queryset = queryset.filter(title__icontains=search) 
 
         return queryset
 
@@ -171,3 +175,23 @@ class TaskTitleCreateView(generics.CreateAPIView):
     
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+    
+
+class ToDoTaskListCreateAPIView(generics.ListCreateAPIView):
+    queryset = ToDoTask.objects.all()
+    serializer_class = ToDoTaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ToDoTask.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class ToDoTaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ToDoTask.objects.all()
+    serializer_class = ToDoTaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ToDoTask.objects.filter(user=self.request.user)

@@ -11,6 +11,15 @@
 # production
 /build
 
+backend/venv
+backend/task_management_backend/.env
+backend/task_management_backend/.env
+backend/task_management_backend/.env
+backend/task_management_backend/task_management_backend/__pycache__
+backend/task_management_backend/tasks/__pycache__
+backend/task_management_backend/users/__pycache__
+
+
 
 # misc
 .DS_Store
@@ -22,3 +31,33 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django migrations
+*/migrations/__pycache__/
+
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/*.pyc
+
+# Database
+db.sqlite3
+
+# Media
+/media/
+
+# Virtual Environment
+venv/
+env/
+
+# IDEs
+.vscode/backend/task_management_backend/tasks/migrations/__pycache__
+.idea/
+
+# MacOS
+.DS_Store

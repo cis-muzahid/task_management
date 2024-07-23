@@ -48,6 +48,21 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
     onUpdateTask(updatedTask);
   };
 
+  function calculateTimeTaken(startTime, endTime) {
+    const start = new Date(startTime);
+    const end = endTime ? new Date(endTime) : new Date();
+    const differenceInMilliseconds = end - start;
+    const totalSeconds = Math.floor(differenceInMilliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+  
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  }
+
   return (
     <div className="card justify-content-center">
       <div className="d-flex justify-content-between align-items-start mt-3 mb-3">
@@ -62,29 +77,30 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
             </span>
           </div>
         } */}
-        <span className='ml-5'>{task.total_time_to_complete}&nbsp;<small>min</small></span>
+        <span className='ml-5'>{calculateTimeTaken(task.start_time,task.end_time)}&nbsp;</span>
         <span className="card-title h5 ml-5 ">{task.title}</span>
+
         <div>
-          {task.isCompleted ? (
+          {task.status === 'completed' ? (
             <div>
               <button className="btn btn-success mr-2" disabled>Completed</button>
-              <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
+              {/* <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
                 <i className="fas fa-edit " ></i>
               </button>
               <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
                 <i className="fas fa-trash-alt " ></i>
-              </button>
+              </button> */}
             </div>
           ) : (
             <div>
-              <button className="btn btn-primary mr-2 " onClick={handleStart} >Start</button>
+              <button className="btn btn-primary mr-2 " disable >Started</button>
               {/* <button className="btn btn-success mr-2" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
               <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
                 <i className="fas fa-edit " ></i>
               </button> */}
-              <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
+              {/* <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
                 <i className="fas fa-trash-alt " ></i>
-              </button>
+              </button> */}
             </div>
           )}
         </div>

@@ -1,12 +1,9 @@
 export const storeTokensInSession = (Authentication) => {
     const accessToken = Authentication.access;
     const refreshToken = Authentication.refresh;
-    const id = Authentication.user_id;
 
     sessionStorage.setItem("usr_1a2b3c", accessToken);
     sessionStorage.setItem("usr_1a2b3r", refreshToken);
-    sessionStorage.setItem("user_id", id);
-
     return true
 }
 

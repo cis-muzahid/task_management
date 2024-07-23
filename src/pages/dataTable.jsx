@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import TaskCard from '../compenents/taskCardList';
 import NavigationBar from '../compenents/NavBar';
 import TaskTable from '../compenents/taskTable';
-import { TaskListAPI } from '../services/apiContext';
+import { TaskListAPI, UpdateTaskAPI } from '../services/apiContext';
 import UpdateTaskModal from '../compenents/updateTaskModel';
 
 const TaskTableList = () => {
   const [tasks, setTasks] = useState([]);
   const [filters, setFilters] = useState({
     status: [],
-    date: ''
+    date: '',
+    search: ''
   });
   const [showTaskUpdateModal, setShowTaskUpdateModal] = useState(false);
-  const [taskToUpdate, setTaskToUpdate] = useState({});
+  const [taskToUpdate, setTaskToUpdate] = useState(null);
 
 
   const fetchTasks = async (queryParams = {}) => {
@@ -34,7 +35,7 @@ const TaskTableList = () => {
     console.log(filters)
   }, []);
 
-  const handleFilterChange = async(e) => {
+  const handleFilterChange = async (e) => {
     const { name, value } = e.target;
     let newFilters = { ...filters };
 
@@ -59,7 +60,7 @@ const TaskTableList = () => {
     } catch (error) {
       console.error('Error:', error);
     }
-    console.log(queryString); 
+    console.log(queryString);
     setFilters(newFilters);
   };
 
@@ -77,18 +78,29 @@ const TaskTableList = () => {
     return params.toString();
   };
 
-  const handleUpdateTask = (data) => {
-    console.log(data)
-    alert("hdfgsd")
+  const handleUpdateTask = async (updatedTask) => {
+    try {
+      const response = await UpdateTaskAPI(updatedTask)
+      if (response.status === 200) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === taskToUpdate.id ? { ...task, ...response.data } : task
+          )
+        );
+      }
+      CloseShowTaskUpdateModal();
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
   }
 
-  const handleShowTaskUpdateModal = (data) =>{
+  const handleShowTaskUpdateModal = (task) => {
+    setTaskToUpdate(task);
     setShowTaskUpdateModal(true);
-    setTaskToUpdate(data)
-  } 
+  }
   const CloseShowTaskUpdateModal = () => {
     setShowTaskUpdateModal(false);
-    setTaskToUpdate({})
+    // setTaskToUpdate({})
   }
 
   return (
@@ -97,9 +109,10 @@ const TaskTableList = () => {
       <div className='container'>
         <h1>Tasks</h1>
         <div className="row d-flex justify-content-end mb-3">
+
           <div className="col-auto">
             <div className="dropdown">
-              <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Status filter
               </button>
               <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -135,16 +148,33 @@ const TaskTableList = () => {
               />
             </div>
           </div>
+          <div className="col-auto">
+            <div className="input-group">
+              <div className="input-group">
+                <input
+                  type="text"
+                  placeholder='Search'
+                  className="form-control"
+                  value={filters.search}
+                  name="search"
+                  onChange={handleFilterChange}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <TaskTable data={tasks} handleShowTaskUpdateModal={handleShowTaskUpdateModal}/>
-      <UpdateTaskModal
+      <TaskTable data={tasks} handleShowTaskUpdateModal={handleShowTaskUpdateModal} />
+
+      {taskToUpdate && (
+        <UpdateTaskModal
           show={showTaskUpdateModal}
           handleClose={CloseShowTaskUpdateModal}
           handleUpdate={handleUpdateTask}
           taskToUpdate={taskToUpdate}
-      />
+        />
+      )}
     </>
   );
 };

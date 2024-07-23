@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import './taskList.css';
 
 const UpdateAlertModal = ({ show, handleClose, handleUpdate, defaultAlertTime }) => {
-    const [alertTime, setAlertTime] = useState({default_alert_time:''});
+    const [alertTime, setAlertTime] = useState({ default_alert_time: '' });
 
     const handleChange = (e) => {
         const newAlertTime = e.target.value
-        setAlertTime({...alertTime,default_alert_time:newAlertTime.toString()});
-        console.log(alertTime,typeof(e.target.value))
+        setAlertTime({ ...alertTime, default_alert_time: newAlertTime.toString() });
+        console.log(alertTime, typeof (e.target.value))
     };
 
     const handleSubmit = (e) => {
@@ -17,8 +18,11 @@ const UpdateAlertModal = ({ show, handleClose, handleUpdate, defaultAlertTime })
 
     return (
         <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
+            <Modal.Header >
                 <Modal.Title>Update Default Alert Time</Modal.Title>
+                <Button variant="light" className="custom-close-btn" onClick={handleClose}>
+                    <i class="fa fa-window-close" aria-hidden="true"></i>
+                </Button>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>

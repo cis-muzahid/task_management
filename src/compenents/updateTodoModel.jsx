@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
-function UpdateTaskModal({ taskToUpdate, show, handleClose, handleUpdate }) {
-    const [data, setData] = useState({
-        id:"",
-        title: "",
-        description: "",
-        total_time_to_complete: "",
-    });
+function UpdateTodoModal({ todoToUpdate,showTodoModel, handleTodoModelClose, handleTodoUpdate }) {
+    const [data, setData] = useState({});
 
     useEffect(() => {
-        if (taskToUpdate) {
-            setData({
-                id: taskToUpdate.id || "",
-                title: taskToUpdate.title || "",
-                description: taskToUpdate.description || "",
-                total_time_to_complete: taskToUpdate.total_time_to_complete || "",
-            });
+        if (todoToUpdate) {
+            setData({...data,todoToUpdate});
         }
-    }, [taskToUpdate]);
+    }, [todoToUpdate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -27,20 +17,20 @@ function UpdateTaskModal({ taskToUpdate, show, handleClose, handleUpdate }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleUpdate(data); 
-        handleClose();
+        handleTodoUpdate(data); 
+        handleTodoModelClose();
     };
 
     return (
         <Modal
-            show={show}
+            show={showTodoModel}
             onHide={() => {
-                handleClose();
+                handleTodoModelClose();
             }}
         >
             <Modal.Header >
                 <Modal.Title>Update Task</Modal.Title>
-                <Button variant="light" className="custom-close-btn" onClick={handleClose}>
+                <Button variant="light" className="custom-close-btn" onClick={handleTodoModelClose}>
                     <i class="fa fa-window-close" aria-hidden="true"></i>
                 </Button>
             </Modal.Header>
@@ -68,25 +58,13 @@ function UpdateTaskModal({ taskToUpdate, show, handleClose, handleUpdate }) {
                             required
                         />
                     </Form.Group>
-                    <Form.Group controlId="timeToComplete">
-                        <Form.Label>Time to Complete (hours)</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="timeToComplete"
-                            placeholder="Enter time to complete the task"
-                            value={data.total_time_to_complete}
-                            onChange={handleChange}
-                            required
-                            min="0"
-                        />
-                    </Form.Group>
                     <Button variant="primary" type="submit" className="btn-sm mt-3">
                         Save Changes
                     </Button>
                     <Button
                         variant="secondary"
                         onClick={() => {
-                            handleClose();
+                            handleTodoModelClose();
                         }}
                         className="btn-sm mt-3 ml-2"
                     >
@@ -98,4 +76,4 @@ function UpdateTaskModal({ taskToUpdate, show, handleClose, handleUpdate }) {
     );
 }
 
-export default UpdateTaskModal;
+export default UpdateTodoModal;

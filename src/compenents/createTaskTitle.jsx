@@ -14,8 +14,11 @@ function CreateTaskTitle({ show, handleClose, handleCreate }){
     };
     return (
         <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
+            <Modal.Header >
                 <Modal.Title>Create Task Title</Modal.Title>
+                <Button variant="light" className="custom-close-btn" onClick={handleClose}>
+                    <i class="fa fa-window-close" aria-hidden="true"></i>
+                </Button>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>

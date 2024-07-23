@@ -6,9 +6,9 @@ import { Link, useNavigate } from "react-router-dom";
 function Register() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: "",
+        // username: "",
         email: "",
-        default_alert_time:"",
+        // default_alert_time:"",
         password: "",
         password2: "",
     });
@@ -44,12 +44,18 @@ function Register() {
                     },
                 }
             );
-            console.log("Registration successful:", response.data);
-            navigate('/login');
+            if(response.status === 200){
+                console.log("Registration successful:", response.data);
+                navigate('/login');
+            }
+            else{
+                console.log(response)
+            }
         } catch (error) {
             // Log the error response from the server
             if (error.response) {
                 console.error("Registration failed:", error.response.data);
+                alert("facing some issues")
             } else {
                 console.error("Registration failed:", error.message);
             }
@@ -60,10 +66,10 @@ function Register() {
         let isValid = true;
         const errors = {};
 
-        if (!formData.username.trim()) {
-            errors.username = "Username is required";
-            isValid = false;
-        }
+        // if (!formData.username.trim()) {
+        //     errors.username = "Username is required";
+        //     isValid = false;
+        // }
 
         if (!formData.email.includes("@")) {
             errors.email = "Invalid email format";
@@ -89,7 +95,7 @@ function Register() {
             <div className="card border-0 shadow  text-center" style={{ width: '18rem' }}>
                 <div className="card-title h3 mb-5">Register</div>
                 <form onSubmit={handleSubmit} className="text-left">
-                    <div className="form-outline mb-4">
+                    {/* <div className="form-outline mb-4">
                         <label className="form-label" htmlFor="username">Username</label>
                         <input
                             type="text"
@@ -100,7 +106,7 @@ function Register() {
                             onChange={handleInput}
                             required
                         />
-                    </div>
+                    </div> */}
 
                     <div className="form-outline mb-4">
                         <label className="form-label" htmlFor="email">Email</label>
@@ -116,7 +122,7 @@ function Register() {
                         {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
                     </div>
 
-                    <div className="form-outline mb-4">
+                    {/* <div className="form-outline mb-4">
                         <label className="form-label" htmlFor="email">Default Alert Time</label>
                         <input
                             type="Number"
@@ -128,7 +134,7 @@ function Register() {
                             required
                         />
                         {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
-                    </div>
+                    </div> */}
 
                     <div className="form-outline mb-4">
                         <label className="form-label" htmlFor="password">Password</label>
