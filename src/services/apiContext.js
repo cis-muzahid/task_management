@@ -69,7 +69,6 @@ export const TaskDeleteAPI = async (id) => {
 };
 
 export const UpdateTaskAPI = async (updatedTask) => {
-    console.log(updatedTask)
     try {
         const token = sessionStorage.getItem('usr_1a2b3c');
         const headers = {
@@ -92,7 +91,6 @@ export const UserDetailAPI = async () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         };
-        console.log(user_id)
         const response = await axiosInstanceWithInterceptors.get(`api/users/update-or-get-user/`, { headers });
         return response;
     } catch (error) {

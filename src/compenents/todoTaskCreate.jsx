@@ -15,7 +15,6 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    console.log("ccccccccccc", timeTocomplete)
     setData(prevData => ({ ...prevData, total_time_to_complete: Number(localStorage.getItem('time_to_complete')) }));
   }, [])
 

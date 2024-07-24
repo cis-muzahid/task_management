@@ -26,7 +26,6 @@ function ForgotPassword() {
             return;
         }
         try {
-            console.log("Form Data:", formData);
             const response = await axios.post(
                 'http://127.0.0.1:8000/api/users/password-reset/', 
                 formData, 
@@ -36,13 +35,17 @@ function ForgotPassword() {
                     }
                 }
             );
-            console.log("Response:", response);
-            setModalMessage(response.data.message);
-            setShowModal(true);
+
+            if(response.status === 200){
+                setModalMessage(response.data.message);
+                setShowModal(true);
+            }else{
+                setEmailError(response.data.message)
+            }
         } catch (error) {
-            console.error("Password reset failed:", error);
-            if (error.response && error.response.data) {
-                setEmailError(error.response.data.email || "An error occurred. Please try again.");
+            console.log("Password reset failed:", error.response.data);
+            if (error.response.data.message) {
+                setEmailError(error.response.data.message);
             } else {
                 setEmailError("An error occurred. Please try again.");
             }

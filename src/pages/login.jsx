@@ -19,7 +19,6 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
         const isValid = validate(formData);
         if (!isValid) {
             console.error("Form validation failed.");
@@ -27,7 +26,6 @@ function Login() {
         }
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/users/login/', formData);
-            console.log(response);
             const Authentication = await response.data;
             const a = storeTokensInSession(Authentication);
             if(a){

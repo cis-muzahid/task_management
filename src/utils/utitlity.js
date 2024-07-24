@@ -18,3 +18,18 @@ export const getAccessTokenSession = () => {
 export const removeTokensSession = () => {
     sessionStorage.removeItem('usr_1a2b3c');
 }
+
+
+export const CreateQueryString = (data) => {
+    const params = new URLSearchParams();
+    for (const key in data) {
+      if (Array.isArray(data[key])) {
+        data[key].forEach(value => params.append(key, value));
+      } else {
+        if (data[key]) {
+          params.append(key, data[key]);
+        }
+      }
+    }
+    return params.toString();
+  };

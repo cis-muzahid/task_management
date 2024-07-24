@@ -11,7 +11,6 @@ const TaskList = () => {
       try {
         const response = await TaskListAPI();
         if (response.status === 200) {
-          console.log('Task List:', response.data);
           setTasks(response.data);
         } else {
           console.error('Error:', response);

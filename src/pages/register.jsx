@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import AlertModel from "../compenents/alertModel";
 // import { storeTokensInSession } from "../utils/utility";
 
 function Register() {
@@ -17,6 +18,9 @@ function Register() {
         password: "",
         password2: "",
     });
+
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
 
     const handleInput = (event) => {
         const { name, value } = event.target;
@@ -44,12 +48,11 @@ function Register() {
                     },
                 }
             );
-            if(response.status === 200){
-                console.log("Registration successful:", response.data);
-                navigate('/login');
+            if(response.status === 201){
+                setModalMessage("Registered Successfully")
+                setShowModal(true)
             }
             else{
-                console.log(response)
             }
         } catch (error) {
             // Log the error response from the server
@@ -90,8 +93,15 @@ function Register() {
         return isValid;
     };
 
+
+    const handleCloseModal = () => {
+        setShowModal(false)
+        navigate('/login')
+    }
+
     return (
-        <div className="container mt-5 d-flex justify-content-center">
+        <>
+            <div className="container mt-5 d-flex justify-content-center">
             <div className="card border-0 shadow  text-center" style={{ width: '18rem' }}>
                 <div className="card-title h3 mb-5">Register</div>
                 <form onSubmit={handleSubmit} className="text-left">
@@ -172,6 +182,13 @@ function Register() {
                 </form>
             </div>
         </div>
+        <AlertModel
+          handleCloseModal={handleCloseModal}
+          showModal={showModal}
+          modalMessage={modalMessage}
+        />
+        </>
+
     );
 }
 

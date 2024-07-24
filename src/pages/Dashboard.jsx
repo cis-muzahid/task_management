@@ -19,6 +19,7 @@ function Dashboard() {
   const [startedTask, setStartedTask] = useState({});
   const [taskTitles, setTaskTitles] = useState([])
 
+  const [todoError, setTodoError] = useState('');
   const [todos, setTodos] = useState([]);
   const [todoUpdateModel, setTodoUpdateModel] = useState(false);
   const [todoToUpdate, setTodoToUpdate] = useState({
@@ -26,6 +27,9 @@ function Dashboard() {
     description: '',
     status: ''
   });
+
+  const [showTaskUpdateModal, setShowTaskUpdateModal] = useState(false);
+  const [taskToUpdate, setTaskToUpdate] = useState(null);
 
   const [timerRunning, setTimerRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -62,7 +66,6 @@ function Dashboard() {
           if (pendingTask) {
             setPendingTasks(pendingTask)
           }
-          console.log(startedTask)
           if (startedTask) {
             setStartedTask(startedTask);
             const startTime = new Date(startedTask.start_time).getTime();
@@ -71,7 +74,6 @@ function Dashboard() {
             const timeElapsed = (currentTime - startTime) + parseInt(savedElapsedTime, 10);
             setElapsedTime(timeElapsed);
             setTimerRunning(true);
-            console.log("ttt==", elapsedTime)
           }
         } else {
           console.error('Error:', response);
@@ -86,7 +88,6 @@ function Dashboard() {
       try {
         const response = await GetAlertTimeAPI();
         if (response.status === 200) {
-          console.log(response.data)
           // setTimeTocomplete(response.data.default_alert_time)
           localStorage.setItem("time_to_complete", response.data.default_alert_time);
         } else {
@@ -102,7 +103,6 @@ function Dashboard() {
       try {
         const response = await TodoListAPI();
         if (response.status === 200) {
-          console.log(response.data)
           setTodos(response.data)
         } else {
           console.error('Error:', response);
@@ -118,7 +118,6 @@ function Dashboard() {
       try {
         const response = await GetTaskTitleAPI();
         if (response.status === 200) {
-          console.log(response.data)
           setTaskTitles(response.data)
         } else {
           console.error('Error:', response);
@@ -128,73 +127,23 @@ function Dashboard() {
       }
     };
     fetchTaskTitle();
-    console.log(startedTask)
     setStartedTask({});
 
   }, []);
 
-  // const addTask = async (newTask) => {
-  //   try {
-  //     console.log('newTask=====', newTask)
-  //     const response = await TaskCreateAPI(newTask);
-  //     if (response.status === 201) {
-  //       console.log('Task Created:', response.data);
-  //       const updatedTasks = [...tasks, response.data];
-  //       const createdTask = response.data
-  //       setTasks(updatedTasks);
-
-  //       const completedTask = { ...startedTask, end_time: new Date().toISOString(), status: 'completed' };
-  //       console.log("Task completed:", completedTask);
-  //       try {
-  //         const response = await UpdateTaskAPI(completedTask);
-  //         if (response.status === 200) {
-  //           console.log('started Task List:', response.data);
-  //           setStartedTask(createdTask);
-  //           setTimerRunning(true);
-  //           localStorage.setItem('startTime', new Date().getTime());
-  //           localStorage.setItem('elapsedTime', 0);
-  //         } else {
-  //           console.error('Error:', response);
-  //         }
-  //       } catch (error) {
-  //         console.error('Error:', error);
-  //       }
-
-  //       // setStartedTask(response.data);
-  //       if (response.data) {
-  //         const startTime = new Date(response.data.start_time).getTime();
-  //         const currentTime = new Date().getTime();
-  //         // const savedElapsedTime = localStorage.getItem('elapsedTime') || 0;
-  //         const timeElapsed = 0
-  //         setElapsedTime(timeElapsed);
-  //         setTimerRunning(true);
-  //         console.log("ttt==", elapsedTime)
-  //       }
-
-  //     } else {
-  //       console.error('Error:', response);
-  //     }
-
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //   }
-  // };
-
   const addTask = async (newTask) => {
     try {
-      console.log('newTask=====', newTask);
       const response = await TaskCreateAPI(newTask);
       if (response.status !== 201) {
         console.error('Error:', response);
         return;
       }
 
-      console.log('Task Created:', response.data);
       const createdTask = response.data;
       const updatedTasks = [...tasks, createdTask];
       setTasks(updatedTasks);
 
-      if (!isEmptyObject(startedTask)) {
+      if (startedTask) {
         await completeCurrentTask();
       }
 
@@ -207,12 +156,15 @@ function Dashboard() {
 
   const completeCurrentTask = async () => {
     const completedTask = { ...startedTask, end_time: new Date().toISOString(), status: 'completed' };
-    console.log("Task completed:", completedTask);
     try {
       const response = await UpdateTaskAPI(completedTask);
       if (response.status === 200) {
-        console.log('Completed Task:', response.data);
         setStartedTask({});
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === completedTask.id ? { ...task, ...response.data } : task
+          )
+        );
         setTimerRunning(false);
         setElapsedTime(0);
       } else {
@@ -225,11 +177,9 @@ function Dashboard() {
 
   const startNewTask = async (task) => {
     const updatedTask = { ...task, start_time: new Date().toISOString(), status: 'started' };
-    console.log("Task started:", updatedTask);
     try {
       const response = await UpdateTaskAPI(updatedTask);
       if (response.status === 200) {
-        console.log('Started Task:', response.data);
         setStartedTask(response.data);
         setTimerRunning(true);
         localStorage.setItem('startTime', new Date().getTime());
@@ -242,10 +192,33 @@ function Dashboard() {
     }
   };
 
-  const updateTask = (updatedTask) => {
+  const handleShowTaskUpdateModal = (taskToUpdate) => {
+    setTaskToUpdate(taskToUpdate)
+    setShowTaskUpdateModal(true)
+  }
+
+  const CloseShowTaskUpdateModal = () => {
+    setShowTaskUpdateModal(false);
+  }
+
+  const updateTask = async (updatedTask) => {
+    try {
+      const response = await UpdateTaskAPI(updatedTask);
+      if (response.status === 200) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === updatedTask.id ? { ...task, ...response.data } : task
+          )
+        );
+        setStartedTask(response.data)
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
     const updatedTasks = tasks.map(t => (t.id === updatedTask.id ? updatedTask : t));
     setTasks(updatedTasks);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   };
 
   const deleteTask = async (taskId) => {
@@ -262,52 +235,48 @@ function Dashboard() {
     }
   };
 
-  const startTask = (task) => {
-    if (isEmptyObject(startedTask)) {
-      const currentDateTime = new Date().toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-      });
-      const updatedTask = { ...task, start_time: new Date().toISOString(), status: 'started' };
-      console.log("Task started:", updatedTask);
+  // const startTask = (task) => {
+  //   if (isEmptyObject(startedTask)) {
+  //     const currentDateTime = new Date().toLocaleString('en-US', {
+  //       year: 'numeric',
+  //       month: '2-digit',
+  //       day: '2-digit',
+  //       hour: '2-digit',
+  //       minute: '2-digit',
+  //       second: '2-digit',
+  //       hour12: false,
+  //     });
+  //     const updatedTask = { ...task, start_time: new Date().toISOString(), status: 'started' };
 
-      const updateTask = async () => {
-        try {
-          const response = await UpdateTaskAPI(updatedTask);
-          if (response.status === 200) {
-            console.log('started Task List:', response.data);
-            setStartedTask(response.data);
-            setTimerRunning(true);
-            localStorage.setItem('startTime', new Date().getTime());
-            localStorage.setItem('elapsedTime', 0);
-          } else {
-            console.error('Error:', response);
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      };
-      updateTask();
+  //     const updateTask = async () => {
+  //       try {
+  //         const response = await UpdateTaskAPI(updatedTask);
+  //         if (response.status === 200) {
+  //           setStartedTask(response.data);
+  //           setTimerRunning(true);
+  //           localStorage.setItem('startTime', new Date().getTime());
+  //           localStorage.setItem('elapsedTime', 0);
+  //         } else {
+  //           console.error('Error:', response);
+  //         }
+  //       } catch (error) {
+  //         console.error('Error:', error);
+  //       }
+  //     };
+  //     updateTask();
 
-    } else {
-      setModalMessage("A task is already running. Please complete the current task before starting a new one.");
-      setShowModal(true);
-    }
-  };
+  //   } else {
+  //     setModalMessage("A task is already running. Please complete the current task before starting a new one.");
+  //     setShowModal(true);
+  //   }
+  // };
 
 
   const CompleteTask = async (task) => {
     const updatedTask = { ...task, end_time: new Date().toISOString(), status: 'completed' };
-    console.log("Task started:", updatedTask);
     try {
       const response = await UpdateTaskAPI(updatedTask);
       if (response.status === 200) {
-        console.log('started Task List:', response.data);
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.id === updatedTask.id ? { ...task, ...response.data } : task
@@ -327,10 +296,10 @@ function Dashboard() {
     }
   }
 
-  const clearStartedTask = () => {
-    setStartedTask(null);
-    localStorage.removeItem('startedTask');
-  };
+  // const clearStartedTask = () => {
+  //   setStartedTask(null);
+  //   localStorage.removeItem('startedTask');
+  // };
 
   const isEmptyObject = (obj) => {
     return Object.keys(obj).length === 0;
@@ -346,12 +315,12 @@ function Dashboard() {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    // window.location.reload(); 
   };
 
 
   const CreateTodo = async (data) => {
     try {
+      // debugger
       const response = await TodoCreateAPI(data);
       if (response.status === 201) {
         const updatedTodos = [...todos, response.data];
@@ -359,10 +328,15 @@ function Dashboard() {
         setModalMessage("Todo created successfully!");
         setShowModal(true);
       } else {
-        console.error('Error:', response);
+        setTodoError(response.message)
       }
     } catch (error) {
-      console.error('Error:', error);
+      if (error.response) {
+        console.error("Error", error.response.data.title[0]);
+        setTodoError(error.response.data.title[0] || 'Some error occurs please try again')
+      } else {
+        setTodoError('Some error occurs please try again')
+      }
     }
   }
 
@@ -389,16 +363,19 @@ function Dashboard() {
   }
 
   const HandleTodoModelClose = () => {
-    setTodoUpdateModel(true)
+    setTodoUpdateModel(false)
   }
 
   const HandleTodoUpdate = async (todo) => {
     try {
       const response = await TodoUpdateAPI(todo);
-      if (response.status === 204) {
-        // const updatedTodos = todos.filter(t => t.id !== todo);
-        // setTodos(updatedTodos);
-        setModalMessage("Todo deleted successfully!");
+      if (response.status === 200) {
+        setTodos((prevTodo) =>
+          prevTodo.map((t) =>
+            t.id === todo.id ? { ...t, ...response.data } : t
+          )
+        );
+        setModalMessage("Todo updated successfully!");
         setShowModal(true);
       } else {
         console.error('Error:', response);
@@ -410,7 +387,6 @@ function Dashboard() {
 
   const HandleTodoComplete = async (todo) => {
     const updateTodo = { ...todo, status: 'COMPLETED' }
-    console.log(updateTodo)
     try {
       const response = await TodoUpdateAPI(updateTodo);
       if (response.status === 200) {
@@ -478,6 +454,7 @@ function Dashboard() {
                   task={startedTask}
                   timerRunning={timerRunning}
                   onHandleComplete={CompleteTask}
+                  showTaskUpdateModel={handleShowTaskUpdateModal}
                 />
               )}
 
@@ -489,7 +466,7 @@ function Dashboard() {
 
               <div className="container">
                 <div className="text-center mt-5 h3 mb-3">TODAY TASKS </div>
-                {tasks.map((task, index) => {
+                {tasks.sort((a, b) => b.id - a.id).map((task, index) => {
                   const taskStartDate = new Date(task.start_time);
                   const today = new Date();
                   const isStartDateToday = taskStartDate.toDateString() === today.toDateString();
@@ -500,7 +477,7 @@ function Dashboard() {
                           task={task}
                           onUpdateTask={updateTask}
                           onDeleteTask={deleteTask}
-                          onStartTask={startTask}
+                          onStartTask={handleShowTaskUpdateModal}
                         />
                       </div>
                     );
@@ -515,22 +492,17 @@ function Dashboard() {
               <div className="text-center mb-4 mt-5">
                 <h3 className="">TODOS</h3>
               </div>
-              <TodoCreate onCreateTodo={CreateTodo} />
+              <TodoCreate onCreateTodo={CreateTodo} todoError={todoError} />
               <div className="text-center mt-5 mb-4">
                 <h3 className="">TODO LIST</h3>
               </div>
               <div className="container pb-5">
-
-                {todos.map((todo, index) => (
-                  <div key={index} className="mt-2">
-                    <TodoCard
-                      todo={todo}
-                      handleTodoDelate={HandleTodoDelate}
-                      showTodoUpdateModel={ShowTodoUpdateModel}
-                      handleTodoComplete={HandleTodoComplete}
-                    />
-                  </div>
-                ))}
+                <TodoCard
+                  todos={todos}
+                  handleTodoDelete={HandleTodoDelate}
+                  showTodoUpdateModel={ShowTodoUpdateModel}
+                  handleTodoComplete={HandleTodoComplete}
+                />
               </div>
             </div>
           </div>
@@ -548,6 +520,15 @@ function Dashboard() {
           handleTodoModelClose={HandleTodoModelClose}
           handleTodoUpdate={HandleTodoUpdate}
         />
+
+        {taskToUpdate && (
+          <UpdateTaskModal
+            show={showTaskUpdateModal}
+            handleClose={CloseShowTaskUpdateModal}
+            handleUpdate={updateTask}
+            taskToUpdate={taskToUpdate}
+          />
+        )}
       </>
     </>
   );

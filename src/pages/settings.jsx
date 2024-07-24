@@ -18,7 +18,6 @@ function Settings() {
             try {
                 const response = await UserDetailAPI();
                 if (response.status === 200) {
-                    console.log('user detail:', response.data);
                     setUserdetail(response.data);
                 } else {
                     console.error('Error:', response);
@@ -47,7 +46,6 @@ function Settings() {
         try {
             const response = await CreateTaskTitleAPI(title)
             if (response.status === 201) {
-                console.log('Task title list:', response.data);
             } else {
                 console.error('Error:', response);
             }
@@ -58,12 +56,10 @@ function Settings() {
     }
 
     const handleUpdateAlertTime = async (newAlertTime) => {
-        console.log('Updating alert time:', newAlertTime);
 
         try {
             const response = await UpdateAlertTimeAPI(newAlertTime)
             if (response.status === 200) {
-                console.log('Task List:', response.data);
                 setUserdetail(prevUserDetail => ({
                     ...prevUserDetail,
                     ...response.data
@@ -78,12 +74,10 @@ function Settings() {
     };
 
     const handleChangePassowrd = async (data) => {
-        console.log('Updating alert time:', data);
 
         try {
             const response = await ChangePasswordAPI(data)
             if (response.status === 200) {
-                console.log('Task List:', response.data);
             } else {
                 console.error('Error:', response);
             }

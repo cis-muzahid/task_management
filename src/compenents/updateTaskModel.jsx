@@ -41,7 +41,7 @@ function UpdateTaskModal({ taskToUpdate, show, handleClose, handleUpdate }) {
             <Modal.Header >
                 <Modal.Title>Update Task</Modal.Title>
                 <Button variant="light" className="custom-close-btn" onClick={handleClose}>
-                    <i class="fa fa-window-close" aria-hidden="true"></i>
+                    <i className="fa fa-window-close" aria-hidden="true"></i>
                 </Button>
             </Modal.Header>
             <Modal.Body>
@@ -72,7 +72,7 @@ function UpdateTaskModal({ taskToUpdate, show, handleClose, handleUpdate }) {
                         <Form.Label>Time to Complete (hours)</Form.Label>
                         <Form.Control
                             type="number"
-                            name="timeToComplete"
+                            name="total_time_to_complete"
                             placeholder="Enter time to complete the task"
                             value={data.total_time_to_complete}
                             onChange={handleChange}

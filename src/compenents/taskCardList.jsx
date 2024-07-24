@@ -93,7 +93,7 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
             </div>
           ) : (
             <div>
-              <button className="btn btn-primary mr-2 " disable >Started</button>
+              <button className="btn btn-primary mr-2 " >Started</button>
               {/* <button className="btn btn-success mr-2" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
               <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
                 <i className="fas fa-edit " ></i>

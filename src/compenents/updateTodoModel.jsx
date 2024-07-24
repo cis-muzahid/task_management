@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
-function UpdateTodoModal({ todoToUpdate,showTodoModel, handleTodoModelClose, handleTodoUpdate }) {
-    const [data, setData] = useState({});
+function UpdateTodoModal({ todoToUpdate,todoUpdateModel, handleTodoModelClose, handleTodoUpdate }) {
+    const [data, setData] = useState({id:'', title: '', description: '' });
 
     useEffect(() => {
         if (todoToUpdate) {
-            setData({...data,todoToUpdate});
+            setData({
+                id:todoToUpdate.id || '',
+                title: todoToUpdate.title || '',
+                description: todoToUpdate.description || '',
+            });
         }
     }, [todoToUpdate]);
 
@@ -23,7 +27,7 @@ function UpdateTodoModal({ todoToUpdate,showTodoModel, handleTodoModelClose, han
 
     return (
         <Modal
-            show={showTodoModel}
+            show={todoUpdateModel}
             onHide={() => {
                 handleTodoModelClose();
             }}
@@ -31,7 +35,7 @@ function UpdateTodoModal({ todoToUpdate,showTodoModel, handleTodoModelClose, han
             <Modal.Header >
                 <Modal.Title>Update Task</Modal.Title>
                 <Button variant="light" className="custom-close-btn" onClick={handleTodoModelClose}>
-                    <i class="fa fa-window-close" aria-hidden="true"></i>
+                    <i className="fa fa-window-close" aria-hidden="true"></i>
                 </Button>
             </Modal.Header>
             <Modal.Body>
@@ -47,7 +51,7 @@ function UpdateTodoModal({ todoToUpdate,showTodoModel, handleTodoModelClose, han
                             required
                         />
                     </Form.Group>
-                    <Form.Group controlId="description">
+                    {/* <Form.Group controlId="description">
                         <Form.Label>Description</Form.Label>
                         <Form.Control
                             as="textarea"
@@ -57,7 +61,7 @@ function UpdateTodoModal({ todoToUpdate,showTodoModel, handleTodoModelClose, han
                             onChange={handleChange}
                             required
                         />
-                    </Form.Group>
+                    </Form.Group> */}
                     <Button variant="primary" type="submit" className="btn-sm mt-3">
                         Save Changes
                     </Button>

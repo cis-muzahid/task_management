@@ -28,7 +28,7 @@ function ChangePassword({ show, handleClose, handleCreate }) {
             <Modal.Header >
                 <Modal.Title>Change Password</Modal.Title>
                 <Button variant="light" className="custom-close-btn" onClick={handleClose}>
-                    <i class="fa fa-window-close" aria-hidden="true"></i>
+                    <i className="fa fa-window-close" aria-hidden="true"></i>
                 </Button>
             </Modal.Header>
             <Modal.Body>

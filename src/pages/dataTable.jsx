@@ -4,6 +4,7 @@ import NavigationBar from '../compenents/NavBar';
 import TaskTable from '../compenents/taskTable';
 import { TaskListAPI, UpdateTaskAPI } from '../services/apiContext';
 import UpdateTaskModal from '../compenents/updateTaskModel';
+import { CreateQueryString } from '../utils/utitlity';
 
 const TaskTableList = () => {
   const [tasks, setTasks] = useState([]);
@@ -20,7 +21,6 @@ const TaskTableList = () => {
     try {
       const response = await TaskListAPI(queryParams);
       if (response.status === 200) {
-        // console.log('Task List:', response.data);
         setTasks(response.data);
       } else {
         console.error('Error:', response);
@@ -32,7 +32,6 @@ const TaskTableList = () => {
 
   useEffect(() => {
     fetchTasks();
-    console.log(filters)
   }, []);
 
   const handleFilterChange = async (e) => {
@@ -48,11 +47,10 @@ const TaskTableList = () => {
     } else {
       newFilters[name] = value;
     }
-    const queryString = createQueryString(newFilters);
+    const queryString = CreateQueryString(newFilters);
     try {
       const response = await TaskListAPI(queryString);
       if (response.status === 200) {
-        console.log('Task List:', response.data);
         setTasks(response.data);
       } else {
         console.error('Error:', response);
@@ -60,23 +58,10 @@ const TaskTableList = () => {
     } catch (error) {
       console.error('Error:', error);
     }
-    console.log(queryString);
     setFilters(newFilters);
   };
 
-  const createQueryString = (data) => {
-    const params = new URLSearchParams();
-    for (const key in data) {
-      if (Array.isArray(data[key])) {
-        data[key].forEach(value => params.append(key, value));
-      } else {
-        if (data[key]) {
-          params.append(key, data[key]);
-        }
-      }
-    }
-    return params.toString();
-  };
+
 
   const handleUpdateTask = async (updatedTask) => {
     try {

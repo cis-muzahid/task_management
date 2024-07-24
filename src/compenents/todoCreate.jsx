@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { GetAlertTimeAPI, TaskCreateAPI } from '../services/apiContext';
 
-const TodoCreate = ({onCreateTodo}) => {
+const TodoCreate = ({onCreateTodo,todoError}) => {
   const initialData = {
     title: '',
     description: '',
@@ -97,8 +97,11 @@ const TodoCreate = ({onCreateTodo}) => {
 
             <div className="col-md-8">
               <div className="form-row align-items-end">
-                <div className="form-group col-md-6">
+                <div className="form-group col-md-12">
                   <small className="text-danger">{errors.title}</small>
+                  {
+                    todoError?<small className="text-danger">{todoError}</small>:''
+                  }
                 </div>
                 <div className="form-group col-md-4">
 
