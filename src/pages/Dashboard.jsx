@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import './dashboard.css';
 
 import NavigationBar from "../compenents/NavBar";
@@ -11,8 +11,14 @@ import TodoCreate from "../compenents/todoCreate";
 import TodoCard from "../compenents/todoCard";
 import UpdateTaskModal from "../compenents/updateTaskModel";
 import UpdateTodoModal from "../compenents/updateTodoModel";
+import NotificationSound from '../assest/audio/mixkit-happy-bells-notification-937.mp3'
+
 
 function Dashboard() {
+
+  const audioPlayer = useRef(null);
+  const [audioPlayed, setAudioPlayed] = useState(false);
+
   const [tasks, setTasks] = useState([]);
 
   const [pendingTasks, setPendingTasks] = useState([]);
@@ -41,94 +47,124 @@ function Dashboard() {
     setTimerRunning(true);
   };
 
+
+
   useEffect(() => {
     let interval;
     if (timerRunning) {
       interval = setInterval(() => {
-        setElapsedTime(prevElapsedTime => {
-          const newElapsedTime = prevElapsedTime + 1000;
+        setElapsedTime((prevElapsedTime) => {
+          let newElapsedTime = prevElapsedTime
+          let elapsedTimeTotalMinutes = Math.floor(prevElapsedTime / 60000);
+          console.log("Elapsed Time Total Minutes:", elapsedTimeTotalMinutes);
+
+          newElapsedTime = prevElapsedTime + 1000;
           localStorage.setItem('elapsedTime', newElapsedTime);
+          if (!audioPlayed && startedTask.total_time_to_complete === elapsedTimeTotalMinutes) {
+            playAudio();
+            setAudioPlayed(true);
+          }
+          // if (startedTask.total_time_to_complete === elapsedTimeTotalMinutes) {
+          //   playAudio()
+          // }
+          // else{
+            // console.log("Task has been completed",prevElapsedTime,newElapsedTime);
+            // setTimerRunning(false);
+            // playAudio()
+            // setModalMessage("Time exceede add some more time to continue or complete the task.")
+            // setShowModal(true)
+            // return prevElapsedTime
+          // }
+  
           return newElapsedTime;
         });
       }, 1000);
     }
+  
     return () => clearInterval(interval);
-  }, [timerRunning]);
+  }, [timerRunning, startedTask, audioPlayed]);
+
+
+  function playAudio() {
+    audioPlayer.current.play();
+  }
+
+  const fetchTasks = async () => {
+    try {
+      const response = await TaskListAPI();
+      if (response.status === 200) {
+        setTasks(response.data);
+        const startedTask = response.data.find(task => task.status === 'started');
+        const pendingTask = response.data.filter(task => task.status === 'pending');
+        if (pendingTask) {
+          setPendingTasks(pendingTask)
+        }
+
+        const newElapsedTime = elapsedTime + 1000;
+        const elapsedTimeTotalMinutes = Math.floor(newElapsedTime / 60000);
+        if (startedTask && startedTask.total_time_to_complete > elapsedTimeTotalMinutes) {
+          setStartedTask(startedTask );
+          const startTime = new Date(startedTask.start_time).getTime();
+          const currentTime = new Date().getTime();
+          const savedElapsedTime = localStorage.getItem('elapsedTime') || 0;
+          const timeElapsed = parseInt(savedElapsedTime, 10);
+          setElapsedTime(timeElapsed);
+          setTimerRunning(true);
+        }
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchAlertTime = async () => {
+    try {
+      const response = await GetAlertTimeAPI();
+      if (response.status === 200) {
+        // setTimeTocomplete(response.data.default_alert_time)
+        localStorage.setItem("time_to_complete", response.data.default_alert_time);
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchTodos = async () => {
+    try {
+      const response = await TodoListAPI();
+      if (response.status === 200) {
+        setTodos(response.data)
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+  const fetchTaskTitle = async () => {
+    try {
+      const response = await GetTaskTitleAPI();
+      if (response.status === 200) {
+        setTaskTitles(response.data)
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await TaskListAPI();
-        if (response.status === 200) {
-          setTasks(response.data);
-          const startedTask = response.data.find(task => task.status === 'started');
-          const pendingTask = response.data.filter(task => task.status === 'pending');
-          if (pendingTask) {
-            setPendingTasks(pendingTask)
-          }
-          if (startedTask) {
-            setStartedTask(startedTask);
-            const startTime = new Date(startedTask.start_time).getTime();
-            const currentTime = new Date().getTime();
-            const savedElapsedTime = localStorage.getItem('elapsedTime') || 0;
-            const timeElapsed = (currentTime - startTime) + parseInt(savedElapsedTime, 10);
-            setElapsedTime(timeElapsed);
-            setTimerRunning(true);
-          }
-        } else {
-          console.error('Error:', response);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
     fetchTasks();
-
-    const fetchAlertTime = async () => {
-      try {
-        const response = await GetAlertTimeAPI();
-        if (response.status === 200) {
-          // setTimeTocomplete(response.data.default_alert_time)
-          localStorage.setItem("time_to_complete", response.data.default_alert_time);
-        } else {
-          console.error('Error:', response);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
     fetchAlertTime();
-
-    const fetchTodos = async () => {
-      try {
-        const response = await TodoListAPI();
-        if (response.status === 200) {
-          setTodos(response.data)
-        } else {
-          console.error('Error:', response);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
     fetchTodos();
-
-
-    const fetchTaskTitle = async () => {
-      try {
-        const response = await GetTaskTitleAPI();
-        if (response.status === 200) {
-          setTaskTitles(response.data)
-        } else {
-          console.error('Error:', response);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
     fetchTaskTitle();
     setStartedTask({});
-
   }, []);
 
   const addTask = async (newTask) => {
@@ -529,6 +565,8 @@ function Dashboard() {
             taskToUpdate={taskToUpdate}
           />
         )}
+
+        <audio ref={audioPlayer} src={NotificationSound} />
       </>
     </>
   );
