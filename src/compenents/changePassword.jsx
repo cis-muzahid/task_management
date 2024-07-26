@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from 'react-bootstrap';
 
-function ChangePassword({ show, handleClose, handleCreate }) {
+function ChangePassword({ show, handleClose, passowrdError,setPassowrdError,passowrdSuccess, handleCreate }) {
     const [data, setData] = useState({
         current_password: '',
         new_password: '',
@@ -17,7 +17,8 @@ function ChangePassword({ show, handleClose, handleCreate }) {
         e.preventDefault();
         if (data.new_password !== data.new_password2) {
             // Handle password mismatch
-            alert('New passwords do not match');
+            // alert('New passwords do not match');
+            setPassowrdError('New passwords do not match')
             return;
         }
         handleCreate(data);
@@ -65,6 +66,12 @@ function ChangePassword({ show, handleClose, handleCreate }) {
                             onChange={handleChange}
                             required
                         />
+                        {
+                            passowrdSuccess ? <small className="text-success">{passowrdSuccess}</small> : ''
+                        }
+                        {
+                            passowrdError ? <small className="text-danger">{passowrdError}</small> : ""
+                        }
                     </Form.Group>
                     <Button variant="primary" type="submit" className='btn-sm mt-3'>
                         Save Changes

@@ -2,12 +2,13 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from users.models import CustomUser
-
+from tasks.models import TaskTitle
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['id', 'username', 'email', 'default_alert_time', 'groups', 'user_permissions']
         read_only_fields = ['groups', 'user_permissions']
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -24,16 +25,35 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         email = validated_data['email']
-        username = email.split('@')[0]  # Extract the username from the email
         password = validated_data['password']
         
         user = get_user_model().objects.create_user(
-            username=username,
+            username=email,
             email=email,
             password=password,
             default_alert_time=10  # Set default alert time to 10
         )
+
+        # Predefined task titles
+        task_titles = [
+            'Feature Development',
+            'Bug Fixing',
+            'Code Review',
+            'Meetings',
+            'Testing',
+            'Documentation',
+            'Deployment and Maintenance',
+            'Collaboration and Communication'
+        ]
+
+        # Create TaskTitle instances for the new user
+        for title in task_titles:
+            # Check if the TaskTitle with the same name already exists for the user
+            if not TaskTitle.objects.filter(user=user, name=title).exists():
+                TaskTitle.objects.create(user=user, name=title)
+
         return user
+
 
 class CustomUserAlertTimeSerializer(serializers.ModelSerializer):
     class Meta:

@@ -25,7 +25,6 @@ const CreateTaskForm = () => {
     //   ...task,
     //   id: generateUniqueId(),
     // };
-    console.log('Task Created:', task);
 
     // const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
     // storedTasks.push(newTask);
@@ -40,7 +39,6 @@ const CreateTaskForm = () => {
       const response = await axios.post('http://127.0.0.1:8000/api/tasks/task-list-create/', task, { headers });
 
       if (response.status === 201) {
-        console.log('Task Created:', response.data);
         setShowModal(true);
       } else {
         console.error('Error:', response);

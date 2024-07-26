@@ -6,10 +6,10 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [resetTime, setresetTime] = useState(5);
 
-    const handleStart = () => {
-        setTimerRunning(true);
-        onStartTask(task);
-    };
+  const handleStart = () => {
+    setTimerRunning(true);
+    onStartTask(task);
+  };
 
   // const handleComplete = () => {
   //   setTimerRunning(false);
@@ -59,14 +59,19 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
     const formattedHours = String(hours).padStart(2, '0');
     const formattedMinutes = String(minutes).padStart(2, '0');
     const formattedSeconds = String(seconds).padStart(2, '0');
-  
+
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   }
 
   return (
-    <div className="card justify-content-center">
-      <div className="d-flex justify-content-between align-items-start mt-3 mb-3">
-        {/* {task.isCompleted ? <span className='ml-3'>{task.timeTakenToComplete}</span>
+    <>
+          <td>{calculateTimeTaken(task.start_time, task.end_time)}</td>
+          <td>{task.title}</td>
+          <td>{task.description}</td>
+      {/* <div className=" justify-content-center">
+        <div className='row'>
+
+          {task.isCompleted ? <span className='ml-3'>{task.timeTakenToComplete}</span>
           :
           <div>
             <span className='mt-2 ml-4'>{formatTime(elapsedTime)}</span>
@@ -76,36 +81,17 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onStartTask }) => {
               <a className="btn btn-sm btn-primary text-white ml-2" onClick={handleAddMinutes}>+</a>
             </span>
           </div>
-        } */}
-        <span className='ml-5'>{calculateTimeTaken(task.start_time,task.end_time)}&nbsp;</span>
-        <span className="card-title h5 ml-5 ">{task.title}</span>
+        }
+          <span className="col-md-2">{calculateTimeTaken(task.start_time, task.end_time)}&nbsp;</span>
+          <span className="col-md-5">{task.title}</span>
 
-        <div>
-          {task.status === 'completed' ? (
-            <div>
-              <button className="btn btn-success mr-2" disabled>Completed</button>
-              {/* <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
-                <i className="fas fa-edit " ></i>
-              </button>
-              <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
-                <i className="fas fa-trash-alt " ></i>
-              </button> */}
-            </div>
-          ) : (
-            <div>
-              <button className="btn btn-primary mr-2 " >Started</button>
-              {/* <button className="btn btn-success mr-2" onClick={handleComplete} disabled={!timerRunning}>Complete</button>
-              <button className="btn btn-outline-primary mr-2" onClick={() => console.log('Edit Task')}>
-                <i className="fas fa-edit " ></i>
-              </button> */}
-              {/* <button className="btn btn-outline-danger  mr-4" onClick={handleDelete}>
-                <i className="fas fa-trash-alt " ></i>
-              </button> */}
-            </div>
-          )}
+          <div className='col-md-5'>
+            {task.description}
+          </div>
+
         </div>
-      </div>
-    </div>
+      </div> */}
+    </>
   );
 };
 

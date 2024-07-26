@@ -47,8 +47,8 @@ const TaskStarted = ({ task, timerRunning, onHandleComplete, showTaskUpdateModel
             <div className="row align-items-center">
               <div className="col-md-4">
                 <div className="form-group">
-                  <label htmlFor="timeToCompleteTask">Started time</label>
-                  <div className="card-title">{formatDateToDisplay(task.start_time)}</div>
+                  <label htmlFor="timeToCompleteTask">Time</label>
+                  <div className="card-title">{task.total_time_to_complete}</div>
                 </div>
               </div>
 
@@ -63,14 +63,14 @@ const TaskStarted = ({ task, timerRunning, onHandleComplete, showTaskUpdateModel
                     <div className="card-title h5 ">{task.description ? task.description : ''}</div>
                   </div>
                   <div className="form-group col-md-4 d-flex justify-content-end">
-                            <button className="btn btn-success mr-2" onClick={handleComplete}>Complete</button>
-                            <button
-                                className="btn btn-outline-primary"
-                                onClick={() => showTaskUpdateModel(task)}
-                            >
-                                <i className="fas fa-edit"></i>
-                            </button>
-                        </div>
+                    <button className="btn btn-success mr-2" onClick={handleComplete}>Complete</button>
+                    <button
+                      className="btn btn-outline-primary"
+                      onClick={() => showTaskUpdateModel(task)}
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -5,7 +5,7 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
     const [currentPage, setCurrentPage] = useState(1);
     const [sortingOrder, setSortingOrder] = useState('asc'); // State for sorting order
 
-    const todosPerPage = 5;
+    const todosPerPage = 10;
 
     // Calculate total pages
     const totalPages = Math.ceil(todos.length / todosPerPage);
@@ -49,16 +49,19 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
                     <tr>
                         <th scope="col"></th>
                         <th scope="col">Title</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" className="text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {currentTodos.map((todo) => (
-                        <tr key={todo.id} className='mt-2'>
+                    {currentTodos.map((todo,index) => (
+                        <tr key={index} className='mt-2'>
                             <td>
                                 <input
                                     type="checkbox"
                                     className="form-check-input ml-2"
+                                    onClick={() => handleTodoComplete(todo)}
+                                    checked={todo.status === 'COMPLETED'}
+                                    disabled={todo.status === 'COMPLETED'}
                                 />
                             </td>
                             <td>
@@ -68,27 +71,19 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
                                     <span className="card-title h5">{todo.title}</span>
                                 )}
                             </td>
-                            <td className="text-end">
-                                {todo.status !== 'COMPLETED' && (
-                                    <button
-                                        className="btn btn-sm btn-success mr-2 mt-2"
-                                        onClick={() => handleTodoComplete(todo)}
-                                    >
-                                        Complete
-                                    </button>
-                                )}
-                                <button
-                                    className="btn btn-sm btn-outline-primary mr-2 mt-2"
+                            <td className="text-right">
+                                <a
+                                    className="mr-2 mt-2 " 
                                     onClick={() => showTodoUpdateModel(todo)}
                                 >
-                                    <i className="fas fa-edit"></i>
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-outline-danger mt-2"
+                                    <i className="fas fa-edit text-alert btn btn-sm btn-primary"></i>
+                                </a>
+                                <a
+                                    className=" mt-2"
                                     onClick={() => handleTodoDelete(todo.id)}
                                 >
-                                    <i className="fas fa-trash-alt"></i>
-                                </button>
+                                    <i className="fas fa-trash-alt btn btn-sm btn-danger"></i>
+                                </a>
                             </td>
                         </tr>
                     ))}

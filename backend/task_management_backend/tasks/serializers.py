@@ -24,6 +24,16 @@ class TaskTitleSerializer(serializers.ModelSerializer):
         model = TaskTitle
         fields = ['id', 'name']
 
+    def validate(self, data):
+        user = self.context['request'].user 
+        name = data.get('name')
+        
+        if TaskTitle.objects.filter(user=user, name=name).exists():
+            raise serializers.ValidationError("A task title with this name already exists for this user.")
+        
+        return data
+
+
 
 class ToDoTaskSerializer(serializers.ModelSerializer):
     class Meta:

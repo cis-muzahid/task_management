@@ -75,7 +75,7 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
       <div className="card">
         <div className="card-body">
           <div className="row align-items-center">
-            <div className="col-md-4">
+            <div className="col-md-2">
               <div className="form-group">
                 <label htmlFor="timeToCompleteTask">Time(min)</label>
                 <div className="d-flex">
@@ -86,7 +86,7 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
               </div>
             </div>
 
-            <div className="col-md-8">
+            <div className="col-md-10">
               <form onSubmit={handleSubmit} className="w-100">
                 <div className="form-row align-items-end">
                   <div className="form-group col-md-4">
@@ -119,7 +119,9 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
             </div>
           </div>
 
-          <div className="row align-items-center">
+          {
+            errors ?
+            <div className="row align-items-center">
             <div className="col-md-4">
               <div className="form-group">
                 <div className="d-flex">
@@ -140,7 +142,9 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> :''
+          }
+
         </div>
       </div>
     </div>

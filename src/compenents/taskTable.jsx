@@ -79,7 +79,7 @@ const TaskTable = ({ data, handleShowTaskUpdateModal }) => {
                     <tr>
                         <th scope="col">Title</th>
                         <th scope="col">Description</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" className='text-right'>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -87,7 +87,7 @@ const TaskTable = ({ data, handleShowTaskUpdateModal }) => {
                         <tr key={index}>
                             <td>{task.title}</td>
                             <td>{task.description}</td>
-                            <td>
+                            <td className='text-right'>
                                 <button
                                     className="btn btn-sm btn-outline-primary mr-2"
                                     onClick={() => handleShowTaskUpdateModal(task)}

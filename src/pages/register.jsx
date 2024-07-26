@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import AlertModel from "../compenents/alertModel";
-// import { storeTokensInSession } from "../utils/utility";
+
+
+const baseURL = process.env.REACT_APP_API_URL
 
 function Register() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        // username: "",
         email: "",
-        // default_alert_time:"",
         password: "",
         password2: "",
     });
@@ -18,16 +18,20 @@ function Register() {
         password: "",
         password2: "",
     });
-
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
 
     const handleInput = (event) => {
         const { name, value } = event.target;
-        const newValue = name === "default_alert_time" ? parseInt(value) : value;
         setFormData((prevFormData) => ({
             ...prevFormData,
-            [name]: newValue
+            [name]: value
+        }));
+
+        // Clear errors when the user starts typing
+        setFormErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: ""
         }));
     };
 
@@ -40,7 +44,7 @@ function Register() {
         }
         try {
             const response = await axios.post(
-                'http://127.0.0.1:8000/api/users/register/', 
+                `${baseURL}api/users/register/`, 
                 formData, 
                 {
                     headers: {
@@ -49,30 +53,17 @@ function Register() {
                 }
             );
             if(response.status === 201){
-                setModalMessage("Registered Successfully")
-                setShowModal(true)
-            }
-            else{
+                setModalMessage("Registered Successfully");
+                setShowModal(true);
             }
         } catch (error) {
-            // Log the error response from the server
-            if (error.response) {
-                console.error("Registration failed:", error.response.data);
-                alert("facing some issues")
-            } else {
-                console.error("Registration failed:", error.message);
-            }
+            handleApiErrors(error);
         }
     };
 
     const validateForm = () => {
         let isValid = true;
         const errors = {};
-
-        // if (!formData.username.trim()) {
-        //     errors.username = "Username is required";
-        //     isValid = false;
-        // }
 
         if (!formData.email.includes("@")) {
             errors.email = "Invalid email format";
@@ -93,102 +84,99 @@ function Register() {
         return isValid;
     };
 
+    const handleApiErrors = (error) => {
+        if (error.response && error.response.data) {
+            const { email, password, non_field_errors } = error.response.data;
+            const errors = {};
+
+            if (email) {
+                errors.email = email.join(', ');
+            }
+            if (password) {
+                errors.password = password.join(', ');
+            }
+            if (non_field_errors) {
+                errors.email = non_field_errors.join(', '); 
+            }
+
+            setFormErrors(errors);
+        } else {
+            console.error("Registration failed:", error.message);
+            setFormErrors({
+                email: "An unexpected error occurred. Please try again.",
+                password: "",
+                password2: ""
+            });
+        }
+    };
 
     const handleCloseModal = () => {
-        setShowModal(false)
-        navigate('/login')
+        setShowModal(false);
+        navigate('/login');
     }
 
     return (
         <>
             <div className="container mt-5 d-flex justify-content-center">
-            <div className="card border-0 shadow  text-center" style={{ width: '18rem' }}>
-                <div className="card-title h3 mb-5">Register</div>
-                <form onSubmit={handleSubmit} className="text-left">
-                    {/* <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="username">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            className="form-control"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleInput}
-                            required
-                        />
-                    </div> */}
+                <div className="card border-0 shadow text-center" style={{ width: '18rem' }}>
+                    <div className="card-title h3 mb-5">Register</div>
+                    <form onSubmit={handleSubmit} className="text-left">
+                        <div className="form-outline mb-4">
+                            <label className="form-label" htmlFor="email">Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                className="form-control"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInput}
+                                required
+                            />
+                            {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
+                        </div>
 
-                    <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            className="form-control"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInput}
-                            required
-                        />
-                        {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
-                    </div>
+                        <div className="form-outline mb-4">
+                            <label className="form-label" htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                className="form-control"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInput}
+                                required
+                            />
+                            {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
+                        </div>
 
-                    {/* <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="email">Default Alert Time</label>
-                        <input
-                            type="Number"
-                            id="default_alert_time"
-                            className="form-control"
-                            name="default_alert_time"
-                            value={formData.default_alert_time}
-                            onChange={handleInput}
-                            required
-                        />
-                        {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
-                    </div> */}
+                        <div className="form-outline mb-4">
+                            <label className="form-label" htmlFor="password2">Confirm Password</label>
+                            <input
+                                type="password"
+                                id="password2"
+                                className="form-control"
+                                name="password2"
+                                value={formData.password2}
+                                onChange={handleInput}
+                                required
+                            />
+                            {formErrors.password2 && <div className="text-danger">{formErrors.password2}</div>}
+                        </div>
 
-                    <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            className="form-control"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInput}
-                            required
-                        />
-                        {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
-                    </div>
+                        <button type="submit" className="btn btn-primary btn-block mb-4">Register</button>
 
-                    <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor="password2">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="password2"
-                            className="form-control"
-                            name="password2"
-                            value={formData.password2}
-                            onChange={handleInput}
-                            required
-                        />
-                        {formErrors.password2 && <div className="text-danger">{formErrors.password2}</div>}
-                    </div>
-
-                    <button type="submit" className="btn btn-primary btn-block mb-4">Register</button>
-
-                    <div className="text-center">
-                        <p>Already have an account? <Link to="/login">Login</Link></p>
-                    </div>
-                </form>
+                        <div className="text-center">
+                            <p>Already have an account? <Link to="/login">Login</Link></p>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-        <AlertModel
-          handleCloseModal={handleCloseModal}
-          showModal={showModal}
-          modalMessage={modalMessage}
-        />
+            <AlertModel
+                handleCloseModal={handleCloseModal}
+                showModal={showModal}
+                modalMessage={modalMessage}
+            />
         </>
-
     );
 }
 

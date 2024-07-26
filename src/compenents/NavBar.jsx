@@ -1,12 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getAccessTokenSession, removeTokensSession } from "../utils/utitlity";
+import { useContext } from "react";
+import { TimerContext } from "../services/TimerContext";
 
 function NavigationBar() {
   // const navigate = useNavigate();
   const token = getAccessTokenSession()
   const navigate = useNavigate();
+  const { resetTimer } = useContext(TimerContext);
 
   const HandleLogout = () => {
+    resetTimer()
     removeTokensSession()
     navigate("/login")
   }

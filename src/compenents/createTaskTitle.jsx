@@ -1,11 +1,9 @@
 import React, { useState } from "react"
 import { Modal, Button, Form } from 'react-bootstrap';
 
-function CreateTaskTitle({ show, handleClose, handleCreate }){
-    const [title, setTitle] = useState({name:''});
+function CreateTaskTitle({ show,title,setTitle,titleError,titleSuccess, handleClose, handleCreate }){
     const handleChange = (e) => {
         setTitle({...title,name:e.target.value});
-        console.log(title)
     };
 
     const handleSubmit = (e) => {
@@ -31,11 +29,17 @@ function CreateTaskTitle({ show, handleClose, handleCreate }){
                             onChange={handleChange}
                             required
                         />
+                        {
+                            titleSuccess?<small className="text-success">{titleSuccess}</small>:''
+                        }
+                        {
+                        titleError?<small className="text-danger">{titleError}</small>:""
+                        }
                     </Form.Group>
                     <Button variant="primary" type="submit" className=' btn-sm mt-3'>
                         Create
                     </Button>
-                    <Button variant="primary" type="submit" className='btn-sm mt-3 ml-2'>
+                    <Button variant="primary" type="submit" className='btn-sm mt-3 ml-2'onClick={handleClose}>
                         Close
                     </Button>
                 </Form>

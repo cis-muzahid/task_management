@@ -3,6 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AlertModel from "../compenents/alertModel";
 
+
+const baseURL = process.env.REACT_APP_API_URL
+
 function ForgotPassword() {
     const navigate = useNavigate();
     const [emailError, setEmailError] = useState("");
@@ -27,7 +30,7 @@ function ForgotPassword() {
         }
         try {
             const response = await axios.post(
-                'http://127.0.0.1:8000/api/users/password-reset/', 
+                `${baseURL}api/users/password-reset/`, 
                 formData, 
                 {
                     headers: {
@@ -43,7 +46,6 @@ function ForgotPassword() {
                 setEmailError(response.data.message)
             }
         } catch (error) {
-            console.log("Password reset failed:", error.response.data);
             if (error.response.data.message) {
                 setEmailError(error.response.data.message);
             } else {
