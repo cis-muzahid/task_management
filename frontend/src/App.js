@@ -18,7 +18,7 @@ const App = () => {
         <Router>
           <Routes>
             <Route
-              path="/"
+              path="/a"
               element={
                 <PrivateRoute>
                   <Dashboard />
