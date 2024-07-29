@@ -15,12 +15,12 @@
 /build
 
 backend/venv
-backend/task_management_backend/.env
-backend/task_management_backend/.env
-backend/task_management_backend/.env
-backend/task_management_backend/task_management_backend/__pycache__
-backend/task_management_backend/tasks/__pycache__
-backend/task_management_backend/users/__pycache__
+backend/.env
+backend/.env
+backend/.env
+backend/task_management_backend/__pycache__
+backend/tasks/__pycache__
+backend/users/__pycache__
 
 
 

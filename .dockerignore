@@ -1,0 +1,33 @@
+# Ignore the Python virtual environment
+backend/venv/
+
+# Ignore SQLite database file
+backend/db.sqlite3
+
+# Ignore migration files
+backend/migrations/
+
+# Ignore Python bytecode
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore node_modules in frontend
+frontend/node_modules/
+
+# Ignore package lock files (they are usually not necessary in the Docker image)
+frontend/package-lock.json
+
+# Ignore log files
+*.log
+
+# Ignore Dockerfile and docker-compose.yml for the Docker build context
+backend/Dockerfile
+frontend/Dockerfile
+docker-compose.yml
+
+# Ignore README file
+README.md
+
+*.old
