@@ -4,11 +4,12 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-n+yxy@zwe0hmped$n$m__9p1b2@snkn9=0(ws_=c_66td!x*^='
+SECRET_KEY = config('SECRET_KEY')
 
-DEBUG = True
+DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -110,14 +111,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Set the token expiration time
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Set the refresh token expiration time
-    'ROTATE_REFRESH_TOKENS': True,  # Rotate refresh tokens
-    'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens
-    'ALGORITHM': 'HS256',  # JWT algorithm
-    'SIGNING_KEY': SECRET_KEY,  # Secret key for signing tokens
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), 
+    'ROTATE_REFRESH_TOKENS': True,  
+    'BLACKLIST_AFTER_ROTATION': True,  
+    'ALGORITHM': 'HS256',  
+    'SIGNING_KEY': config(SECRET_KEY), 
     'VERIFYING_KEY': None,
-    'AUTH_HEADER_TYPES': ('Bearer',),  # Header type for JWT
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
