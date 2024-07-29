@@ -1,7 +1,4 @@
-// src/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
-// import authService from './authService';
-import { getAccessTokenSession } from '../utils/utitlity';
 
 const AuthContext = createContext();
 

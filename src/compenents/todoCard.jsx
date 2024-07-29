@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import './taskList.css';
+import React, { useState } from 'react';
 
 const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComplete }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortingOrder, setSortingOrder] = useState('asc'); // State for sorting order
+    const [sortingOrder, setSortingOrder] = useState('asc');
 
     const todosPerPage = 10;
 
-    // Calculate total pages
     const totalPages = Math.ceil(todos.length / todosPerPage);
 
-    // Calculate indexes for pagination
     const indexOfLastTodo = currentPage * todosPerPage;
     const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
 
-    // Function to handle sorting
     const sortedTodos = [...todos].sort((a, b) => {
         if (sortingOrder === 'asc') {
             return a.id - b.id;
@@ -23,15 +19,12 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
         }
     });
 
-    // Get current todos after sorting
     const currentTodos = sortedTodos.slice(indexOfFirstTodo, indexOfLastTodo);
 
-    // Function to handle page change
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
     };
 
-    // Function to toggle sorting order
     const toggleSortingOrder = () => {
         setSortingOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
     };
@@ -53,13 +46,13 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
                     </tr>
                 </thead>
                 <tbody>
-                    {currentTodos.map((todo,index) => (
+                    {currentTodos.map((todo, index) => (
                         <tr key={index} className='mt-2'>
                             <td>
                                 <input
                                     type="checkbox"
                                     className="form-check-input ml-2"
-                                    onClick={() => handleTodoComplete(todo)}
+                                    onChange={() => handleTodoComplete(todo)}
                                     checked={todo.status === 'COMPLETED'}
                                     disabled={todo.status === 'COMPLETED'}
                                 />
@@ -73,7 +66,7 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
                             </td>
                             <td className="text-right">
                                 <a
-                                    className="mr-2 mt-2 " 
+                                    className="mr-2 mt-2 "
                                     onClick={() => showTodoUpdateModel(todo)}
                                 >
                                     <i className="fas fa-edit text-alert btn btn-sm btn-primary"></i>

@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 
-const TaskTable = ({ data, handleShowTaskUpdateModal }) => {
-    // const [statusFilter, setStatusFilter] = useState('');
-    // const [dateFilter, setDateFilter] = useState('');
-    const [selectedTasks, setSelectedTasks] = useState([]);
-
+const TaskTable = ({ data, handleShowTaskUpdateModal, onDeleteTask}) => {
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10); // You can adjust this number as needed
+    const [itemsPerPage] = useState(10); 
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -23,54 +19,6 @@ const TaskTable = ({ data, handleShowTaskUpdateModal }) => {
     for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
     }
-
-
-    // const handleStatusChange = (e) => {
-    //     setStatusFilter(e.target.value);
-    // };
-
-    // const handleDateChange = (e) => {
-    //     setDateFilter(e.target.value);
-    // };
-    // const handleTaskSelection = (taskId) => {
-    //     const selectedIndex = selectedTasks.indexOf(taskId);
-    //     let newSelectedTasks = [];
-
-    //     if (selectedIndex === -1) {
-    //         newSelectedTasks = newSelectedTasks.concat(selectedTasks, taskId);
-    //     } else if (selectedIndex === 0) {
-    //         newSelectedTasks = newSelectedTasks.concat(selectedTasks.slice(1));
-    //     } else if (selectedIndex === selectedTasks.length - 1) {
-    //         newSelectedTasks = newSelectedTasks.concat(selectedTasks.slice(0, -1));
-    //     } else if (selectedIndex > 0) {
-    //         newSelectedTasks = newSelectedTasks.concat(
-    //             selectedTasks.slice(0, selectedIndex),
-    //             selectedTasks.slice(selectedIndex + 1),
-    //         );
-    //     }
-
-    //     setSelectedTasks(newSelectedTasks);
-    // };
-
-    // const handleDeleteSelected = () => {
-    //     // Example function to delete selected tasks
-    //     console.log('Deleting selected tasks:', selectedTasks);
-    //     // Implement your delete logic here
-    //     // Example: Call an API to delete tasks by IDs in selectedTasks
-    // };
-
-    // const handleUpdateSelected = () => {
-    //     // Example function to update selected tasks
-    //     console.log('Updating selected tasks:', selectedTasks);
-    //     // Implement your update logic here
-    //     // Example: Open a modal or form to update tasks in selectedTasks
-    // };
-
-    // const filteredData = data.filter((task) => {
-    //     const dateMatch = dateFilter ? task.date.includes(dateFilter) : true;
-    //     const statusMatch = statusFilter ? task.status === statusFilter : true;
-    //     return dateMatch && statusMatch;
-    // });
 
     return (
         <div className='container'>
@@ -93,6 +41,12 @@ const TaskTable = ({ data, handleShowTaskUpdateModal }) => {
                                     onClick={() => handleShowTaskUpdateModal(task)}
                                 >
                                     <i className="fas fa-edit"></i>
+                                </button>
+                                <button
+                                    className="btn btn-sm btn-outline-danger mr-2"
+                                    onClick={() => onDeleteTask(task.id)}
+                                >
+                                    <i className="fas fa-trash-alt"></i>
                                 </button>
                             </td>
                         </tr>

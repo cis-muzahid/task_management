@@ -1,11 +1,4 @@
-import axios from "axios";
 import { axiosInstanceWithInterceptors } from "./axiosInstance";
-
-
-
-
-const token = sessionStorage.getItem('usr_1a2b3c');
-
 
 export const GetAlertTimeAPI = async () => {
     try {
@@ -86,7 +79,6 @@ export const UpdateTaskAPI = async (updatedTask) => {
 export const UserDetailAPI = async () => {
     try {
         const token = sessionStorage.getItem('usr_1a2b3c');
-        const user_id = sessionStorage.getItem('user_id');
         const headers = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import TaskCard from '../compenents/taskCardList';
 import NavigationBar from '../compenents/NavBar';
 import TaskTable from '../compenents/taskTable';
-import { TaskListAPI, UpdateTaskAPI } from '../services/apiContext';
+import { TaskDeleteAPI, TaskListAPI, UpdateTaskAPI } from '../services/apiContext';
 import UpdateTaskModal from '../compenents/updateTaskModel';
 import { CreateQueryString } from '../utils/utitlity';
+import AlertModel from '../compenents/alertModel';
 
 const TaskTableList = () => {
   const [tasks, setTasks] = useState([]);
@@ -16,6 +16,8 @@ const TaskTableList = () => {
   const [showTaskUpdateModal, setShowTaskUpdateModal] = useState(false);
   const [taskToUpdate, setTaskToUpdate] = useState(null);
 
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const fetchTasks = async (queryParams = {}) => {
     try {
@@ -79,14 +81,34 @@ const TaskTableList = () => {
     }
   }
 
+
+  const HandleDeleteTask = async (taskId) => {
+    try {
+      const response = await TaskDeleteAPI(taskId);
+      if (response.status === 204) {
+        const updatedTasks = tasks.filter(t => t.id !== taskId);
+        setTasks(updatedTasks);
+        setModalMessage('Task Deleted Successfully')
+        setShowModal(true)
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   const handleShowTaskUpdateModal = (task) => {
     setTaskToUpdate(task);
     setShowTaskUpdateModal(true);
   }
   const CloseShowTaskUpdateModal = () => {
     setShowTaskUpdateModal(false);
-    // setTaskToUpdate({})
   }
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   return (
     <>
@@ -150,7 +172,13 @@ const TaskTableList = () => {
         </div>
       </div>
 
-      <TaskTable data={tasks} handleShowTaskUpdateModal={handleShowTaskUpdateModal} />
+      <TaskTable data={tasks} handleShowTaskUpdateModal={handleShowTaskUpdateModal} onDeleteTask={HandleDeleteTask}/>
+
+      <AlertModel
+        handleCloseModal={handleCloseModal}
+        showModal={showModal}
+        modalMessage={modalMessage}
+      />
 
       {taskToUpdate && (
         <UpdateTaskModal

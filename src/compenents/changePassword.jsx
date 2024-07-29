@@ -16,8 +16,6 @@ function ChangePassword({ show, handleClose, passowrdError,setPassowrdError,pass
     const handleSubmit = (e) => {
         e.preventDefault();
         if (data.new_password !== data.new_password2) {
-            // Handle password mismatch
-            // alert('New passwords do not match');
             setPassowrdError('New passwords do not match')
             return;
         }

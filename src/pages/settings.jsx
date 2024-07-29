@@ -3,9 +3,7 @@ import ProfileInfo from "../compenents/profileInfo";
 import NavigationBar from "../compenents/NavBar";
 import { ChangePasswordAPI, CreateTaskTitleAPI, UpdateAlertTimeAPI, UserDetailAPI } from "../services/apiContext";
 import CreateTaskTitle from "../compenents/createTaskTitle";
-import UpdateAlertModal from "../compenents/alertForm";
 import ChangePassword from "../compenents/changePassword";
-import CreateTaskForm from "./createTaskForm";
 import AlertModel from "../compenents/alertModel";
 
 function Settings() {
@@ -62,7 +60,7 @@ function Settings() {
         try {
             const response = await CreateTaskTitleAPI(title)
             if (response.status === 201) {
-                setTitle({ ...title, name: '' })
+                setTitle({ ...title, name: '' })    
                 setTitleSuccess('Title created successfully')
             } else {
                 console.error('Error:', response);

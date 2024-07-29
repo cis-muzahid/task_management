@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { Modal, Button, Form } from 'react-bootstrap';
 
 function CreateTaskTitle({ show,title,setTitle,titleError,titleSuccess, handleClose, handleCreate }){
@@ -39,7 +39,7 @@ function CreateTaskTitle({ show,title,setTitle,titleError,titleSuccess, handleCl
                     <Button variant="primary" type="submit" className=' btn-sm mt-3'>
                         Create
                     </Button>
-                    <Button variant="primary" type="submit" className='btn-sm mt-3 ml-2'onClick={handleClose}>
+                    <Button variant="secondary" type="submit" className='btn-sm mt-3 ml-2'onClick={handleClose}>
                         Close
                     </Button>
                 </Form>

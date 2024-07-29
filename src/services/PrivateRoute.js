@@ -1,8 +1,5 @@
-// src/PrivateRoute.js
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import AuthContext from './AuthContext';
-// import { getAccessTokenSession } from '../utils/utility';
 
 const PrivateRoute = ({ children }) => {
   const location = useLocation();

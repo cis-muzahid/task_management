@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './taskList.css'
+
 const TaskCard = ({ task, onUpdateTask }) => {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
@@ -9,7 +9,6 @@ const TaskCard = ({ task, onUpdateTask }) => {
   const [resetTime, setresetTime] = useState(5);
 
   useEffect(() => {
-    // console.log("useeeffect==",JSON.parse(localStorage.getItem('tasks')) || [])
     let interval;
     if (timerRunning) {
       const start = new Date();
@@ -43,7 +42,6 @@ const TaskCard = ({ task, onUpdateTask }) => {
     const updatedTasks = storedTasks.map(t => (t.id === task.id ? updatedTask : t));
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     onUpdateTask(updatedTask);
-    console.log("====", updatedTasks)
   };
 
   const formatTime = (seconds) => {
@@ -80,7 +78,6 @@ const TaskCard = ({ task, onUpdateTask }) => {
     const newTasks = storedTasks.filter(t => t.id !== task.id);
     localStorage.setItem('tasks', JSON.stringify(newTasks));
     onUpdateTask(newTasks);
-    console.log(newTasks)
   };
 
   return (

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import './taskList.css';
 
 const UpdateAlertModal = ({ show, handleClose, handleUpdate, defaultAlertTime }) => {
     const [alertTime, setAlertTime] = useState({ default_alert_time: '' });
@@ -8,7 +7,6 @@ const UpdateAlertModal = ({ show, handleClose, handleUpdate, defaultAlertTime })
     const handleChange = (e) => {
         const newAlertTime = e.target.value
         setAlertTime({ ...alertTime, default_alert_time: newAlertTime.toString() });
-        console.log(alertTime, typeof (e.target.value))
     };
 
     const handleSubmit = (e) => {

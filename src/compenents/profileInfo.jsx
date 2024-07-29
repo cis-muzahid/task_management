@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import UpdateAlertModal from "./alertForm";
 
 function ProfileInfo({userdetail,showModal,handleShowModal,UpdateAlertTime, handleCloseModal}){

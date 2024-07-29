@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { GetAlertTimeAPI, TaskCreateAPI } from '../services/apiContext';
 
-const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
+const TaskCreate = ({ onAddTask, taskTitles }) => {
   const initialData = {
     title: '',
     description: '',
@@ -15,7 +13,7 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    setData(prevData => ({ ...prevData, total_time_to_complete: Number(localStorage.getItem('time_to_complete')) }));
+    setData(prevData => ({ ...prevData, total_time_to_complete: Number(localStorage.getItem('time_to_complete')) || '' }));
   }, [])
 
   const handleAddMinutes = () => {
@@ -32,7 +30,6 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setData(prevData => ({ ...prevData, [name]: value }));
-    // Clear errors if input is filled
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
   };
 
@@ -41,7 +38,6 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
     if (validateForm()) {
 
       onAddTask(data);
-      // setData(initialData);
       setData(prevData => ({ ...prevData, total_time_to_complete: Number(localStorage.getItem('time_to_complete')), title: '', description: '' }));
     }
   };
@@ -62,13 +58,6 @@ const TaskCreate = ({ onAddTask, timeTocomplete, taskTitles }) => {
     return isValid;
   };
 
-  const generateUniqueId = () => {
-    const timestamp = Date.now().toString(36);
-    const randomNum = Math.random().toString(36).substr(2, 9);
-    return '_' + timestamp + randomNum;
-  };
-
-  // const popularTitles = ['Meeting', 'Report', 'Email Follow-up', 'Code Review', 'Design Review'];
 
   return (
     <div className='container mt-5'>

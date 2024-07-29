@@ -1,42 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import './taskList.css';
 
 const TaskStarted = ({ task, timerRunning, onHandleComplete, showTaskUpdateModel }) => {
 
-  // const handleComplete = () => {
-  //   // setTimerRunning(false);
-  //   const end = new Date();
-  //   const minutes = Math.floor(elapsedTime / 60) || '00';
-  //   const seconds = elapsedTime % 60 || '00';
-  //   const updatedTask = { ...task, timeTakenToComplete: `00:${minutes}:${seconds}`, endDate: end.toLocaleTimeString(), isCompleted: true };
-  //   // onUpdateTask(updatedTask);
-  // };
-
-
   const handleComplete = () => {
     onHandleComplete(task);
-  };
-
-  const handleDelete = () => {
-    // onDeleteTask(task.id);
-  };
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60) || '00';
-    const secs = seconds % 60 || '00';
-    return `00:${mins}:${secs}`;
-  };
-
-  const formatDateToDisplay = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
   };
 
   return (
@@ -74,29 +41,6 @@ const TaskStarted = ({ task, timerRunning, onHandleComplete, showTaskUpdateModel
                 </div>
               </div>
             </div>
-
-            {/* <div className="row align-items-center">
-              <div className="col-md-4">
-                <div className="form-group">
-                  <div className="d-flex">
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-md-8">
-                <div className="form-row align-items-end">
-                  <div className="form-group col-md-6">
-                    <small className="text-danger">{ }</small>
-                  </div>
-                  <div className="form-group col-md-4">
-
-                  </div>
-                  <div className="form-group col-md-2">
-
-                  </div>
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>

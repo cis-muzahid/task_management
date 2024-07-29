@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import AlertModel from "../compenents/alertModel";
 
 
 const baseURL = process.env.REACT_APP_API_URL
 
 function ForgotPassword() {
-    const navigate = useNavigate();
     const [emailError, setEmailError] = useState("");
     const [formData, setFormData] = useState({
         email: ""
