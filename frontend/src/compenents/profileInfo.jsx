@@ -10,8 +10,8 @@ function ProfileInfo({userdetail,showModal,handleShowModal,UpdateAlertTime, hand
                     <div className="card-body text-center">
                         <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
                             className="rounded-circle img-fluid" style={{"width":100}} />
-                        <h5 className="my-3">{userdetail.id}</h5>
-                        <p className="text-muted mb-1">{userdetail.username}</p>
+                        <h5 className="my-3"></h5>
+                        <p className="text-muted mb-1">{userdetail.name}</p>
                         <p className="text-muted mb-4">{userdetail.email}</p>
                         <div className="text-muted mb-4">
                             <span>Default alert time - &nbsp;{userdetail.default_alert_time}&nbsp;min</span>

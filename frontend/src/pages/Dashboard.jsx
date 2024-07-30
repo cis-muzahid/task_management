@@ -421,7 +421,7 @@ function Dashboard() {
 
           <div className="col-md-8 ">
             <div className="text-center mb-4 mt-5">
-              <h2 className="text-bold">RUNNING TASK</h2>
+              {/* <h2 className="text-bold">RUNNING TASK</h2> */}
             </div>
 
             <div className="d-flex justify-content-center mb-3">
@@ -439,14 +439,14 @@ function Dashboard() {
               />
             )}
 
-            <div className="text-center mt-5 mb-4">
+            {/* <div className="text-center mt-5 mb-4">
               <h3 className="">CREATE TASK</h3>
-            </div>
+            </div> */}
 
             <TaskCreate onAddTask={addTask} taskTitles={taskTitles} />
 
-            <div className="container">
-              <div className="text-center mt-5 h3 mb-3">TODAY TASKS </div>
+            <div className="container mt-5">
+              {/* <div className="text-center mt-5 h3 mb-3">TODAY TASKS </div> */}
               <div className='container'>
                 <div className="row d-flex justify-content-end mb-3">
                   <div className="col-auto">
@@ -465,10 +465,10 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-              <table className="table justify-content-center">
+              <table className="table table-striped justify-content-center">
                 <thead>
                   <tr>
-                    <th scope="col">Time</th>
+                    <th scope="col">Time(min) </th>
                     <th scope="col">Title</th>
                     <th scope="col">Description</th>
                   </tr>

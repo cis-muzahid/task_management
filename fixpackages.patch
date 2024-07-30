@@ -1,0 +1,24 @@
+diff --git a/docker-compose.yml b/docker-compose.yml
+index 13faa14..ce0013f 100644
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -11,14 +11,15 @@ services:
+       - ./backend/.env
+ 
+   frontend:
+-    build:
+-      context: ./frontend
+-      dockerfile: Dockerfile
++    image: "node:22"
++    user: "node"
++    working_dir: /app
+     volumes:
+       - ./frontend:/app
+     ports:
+       - "3000:3000"
+     env_file:
+-    - ./frontend/.env
++      - ./frontend/.env
+     depends_on:
+       - backend
++    command: /bin/sh -c "yarn install --frozen-lockfile && yarn start"
