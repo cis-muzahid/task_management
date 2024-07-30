@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import ProfileInfo from "../compenents/profileInfo";
 import NavigationBar from "../compenents/NavBar";
-import { ChangePasswordAPI, CreateTaskTitleAPI, UpdateAlertTimeAPI, UserDetailAPI } from "../services/apiContext";
+import { ChangePasswordAPI, CreateTaskTitleAPI, TitleDeleteAPI, UpdateAlertTimeAPI, UserDetailAPI } from "../services/apiContext";
 import CreateTaskTitle from "../compenents/createTaskTitle";
 import ChangePassword from "../compenents/changePassword";
 import AlertModel from "../compenents/alertModel";
-
+import TaskList from "./TaskList";
+import UpdateTaskTitleModal from "../compenents/updateTaskTitle";
 function Settings() {
     const [userdetail, setUserdetail] = useState({});
     const [showModal, setShowModal] = useState(false);
@@ -18,7 +19,8 @@ function Settings() {
     const [passowrdError, setPassowrdError] = useState('');
     const [passowrdSuccess, setPassowrdSuccess] = useState('');
 
-
+    const [showTitleUpdateModal, setShowTitleUpdateModal] = useState(false);
+    const [titleToUpdate, setTitlkeToUpdate] = useState(null);
 
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
@@ -60,7 +62,7 @@ function Settings() {
         try {
             const response = await CreateTaskTitleAPI(title)
             if (response.status === 201) {
-                setTitle({ ...title, name: '' })    
+                setTitle({ ...title, name: '' })
                 setTitleSuccess('Title created successfully')
             } else {
                 console.error('Error:', response);
@@ -68,17 +70,17 @@ function Settings() {
             }
         } catch (error) {
             if (error.response) {
-                if(error.response.data.name){
+                if (error.response.data.name) {
                     console.error("title create failed:", error.response.data);
-                    setTitleError(error.response.data.name[0]||'getting some issue try again')
+                    setTitleError(error.response.data.name[0] || 'getting some issue try again')
                 }
-                if(error.response.data.non_field_errors){
+                if (error.response.data.non_field_errors) {
                     console.error("title create failed:", error.response.data);
-                    setTitleError(error.response.data.non_field_errors[0]||'getting some issue try again')
+                    setTitleError(error.response.data.non_field_errors[0] || 'getting some issue try again')
                 }
             } else {
                 console.error("title create failed:", error.message);
-                setTitleError(error.response.data.name[0]||'getting some issues try again')
+                setTitleError(error.response.data.name[0] || 'getting some issues try again')
             }
         }
         // CloseCreateModal();
@@ -112,27 +114,53 @@ function Settings() {
             const response = await ChangePasswordAPI(data)
             if (response.status === 200) {
                 setPassowrdSuccess('Password changed successfully')
-            }else {
+            } else {
                 console.error('Error:', response);
-                setPassowrdError(response.data.new_password[0]||'getting some issue try again')
+                setPassowrdError(response.data.new_password[0] || 'getting some issue try again')
             }
         } catch (error) {
             if (error.response) {
                 console.error("password change failed:", error.response.data);
-                if(error.response.data.new_password){
-                    setPassowrdError(error.response.data.new_password[0]||'getting some issue try again')
+                if (error.response.data.new_password) {
+                    setPassowrdError(error.response.data.new_password[0] || 'getting some issue try again')
                 }
-                else if(error.response.data.current_password){
-                    setPassowrdError(error.response.data.current_password||'getting some issue try again')
+                else if (error.response.data.current_password) {
+                    setPassowrdError(error.response.data.current_password || 'getting some issue try again')
                 }
             } else {
                 console.error("password change  failed:", error.message);
-                setTitleError(error.response.data.new_password[0]||'getting some issues try again')
+                setTitleError(error.response.data.new_password[0] || 'getting some issues try again')
             }
         }
     };
 
+    const deleteTitle = async(id) => {
+        console.log("deleted", id)
+        try {
+            const response = await TitleDeleteAPI(id);
+            if (response.status === 204) {
+                // const updatedTasks = tasks.filter(t => t.id !== id);
+                // setTasks(updatedTasks);
+                // setModalMessage('Task Deleted Successfully')
+                // setShowModal(true)
+            } else {
+                console.error('Error:', response);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    const HandleTitleUpdateShowModel = (data) => {
+        setShowTitleUpdateModal(true)
+    }
 
+    const HandleTitleModelClose = () => {
+        setShowTitleUpdateModal(false)
+    }
+
+    const HandleTitleUpdate = () => {
+        console.log("updated")
+    }
 
     const handleCloseMessageModal = () => {
         setShowMessageModal(false);
@@ -182,11 +210,23 @@ function Settings() {
                 handleCreate={handleChangePassowrd}
             />
 
+
+
             <AlertModel
                 handleCloseModal={handleCloseMessageModal}
                 showModal={showMessageModal}
                 modalMessage={modalMessage}
             />
+            <TaskList deleteTitle={deleteTitle} updatetTitle={HandleTitleUpdateShowModel} />
+
+            {titleToUpdate && (
+                <UpdateTaskTitleModal
+                    titleToUpdate={titleToUpdate}
+                    titleUpdateModel={showTitleUpdateModal}
+                    handleTitleModelClose={HandleTitleModelClose}
+                    handleTitleUpdate={HandleTitleUpdate}
+                />
+            )}
         </>
     )
 }

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from .models import Task, TaskTitle, ToDoTask
-from .serializers import TaskSerializer,TaskTitleSerializer,ToDoTaskSerializer
+from .serializers import TaskSerializer, TaskTitleSerializer, ToDoTaskSerializer, TitleTaskListSerializer
 from users.serializers import CustomUserSerializer
 from django.utils.dateparse import parse_date
 
@@ -195,3 +195,36 @@ class ToDoTaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
 
     def get_queryset(self):
         return ToDoTask.objects.filter(user=self.request.user)
+
+
+class TitleTaskListView(generics.ListCreateAPIView):
+    serializer_class = TitleTaskListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        user = self.request.user
+        # breakpoint()
+        queryset = TaskTitle.objects.filter(user=user)
+        search = self.request.query_params.get('search', '')
+
+        if search:
+            queryset = queryset.filter(name__icontains=search) 
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class TaskTitleUpdateView(generics.UpdateAPIView):
+    queryset = TaskTitle.objects.all()
+    serializer_class = TaskTitleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class TaskTitleDeleteView(generics.DestroyAPIView):
+    queryset = TaskTitle.objects.all()
+    serializer_class = TaskTitleSerializer
+    permission_classes = [permissions.IsAuthenticated]

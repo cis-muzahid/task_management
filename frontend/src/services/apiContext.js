@@ -108,6 +108,42 @@ export const TaskCreateAPI = async (formData) => {
     }
 };
 
+
+export const GetTaskTitleListAPI = async () => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        
+        const response = await axiosInstanceWithInterceptors.get('api/tasks/task-titles-list/', {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+//  new created
+export const GetTaskTitleList = async (queryString) => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        
+        const response = await axiosInstanceWithInterceptors.get(`api/tasks/task-titles-list/?${queryString}`, {headers});
+        console.log('response on api', response)
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};
+
+
+
 export const GetTaskTitleAPI = async () => {
     try {
         const token = sessionStorage.getItem('usr_1a2b3c');
@@ -115,7 +151,8 @@ export const GetTaskTitleAPI = async () => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const response = await axiosInstanceWithInterceptors.get('api/tasks/task-titles/', {headers});
+        const response = await axiosInstanceWithInterceptors.get('api/tasks/task-titles/', {headers},);
+
         return response;
     } catch (error) {
         console.error('Error creating task:', error);
@@ -213,3 +250,17 @@ export const TodoUpdateAPI = async (todo) => {
     }
 };
 
+export const TitleDeleteAPI = async (id) => {
+    try {
+        const token = sessionStorage.getItem('usr_1a2b3c');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const response = await axiosInstanceWithInterceptors.delete(`http://127.0.0.1:8000/api/tasks/task-title-delete/${id}/`, {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};

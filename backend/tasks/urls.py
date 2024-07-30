@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import ( TaskListCreateView, TaskDetailView, MultipleTaskUpdateView, TaskStartStopView,
                     TaskDeleteView,TaskUpdateView,TaskTitleListView, TaskTitleCreateView,
-                    ToDoTaskRetrieveUpdateDestroyAPIView, ToDoTaskListCreateAPIView )
+                    ToDoTaskRetrieveUpdateDestroyAPIView, ToDoTaskListCreateAPIView, TitleTaskListView , TaskTitleUpdateView, TaskTitleDeleteView)
 
 
 urlpatterns = [
@@ -12,8 +12,12 @@ urlpatterns = [
     path('start-stop/', TaskStartStopView.as_view(), name='task-start-stop'),
     path('tasks-update/<int:pk>/', TaskUpdateView.as_view(), name='task-update'),
     path('task-titles/', TaskTitleListView.as_view(), name='tasktitle-list'),
+    path('task-titles-list/', TitleTaskListView.as_view(), name='tasktitle-list'),
     path('task-title-create/', TaskTitleCreateView.as_view(), name='tasktitle-create'),
 
     path('todo-list-create/', ToDoTaskListCreateAPIView.as_view(), name='task-list-create'),
     path('todo-retrieve-delete-update/<int:pk>/', ToDoTaskRetrieveUpdateDestroyAPIView.as_view(), name='task-retrieve-update-destroy'),
+
+    path('task-title-update/<int:pk>/', TaskTitleUpdateView.as_view(), name='tasktitle-update'),
+    path('task-title-delete/<int:pk>/', TaskTitleDeleteView.as_view(), name='tasktitle-delete'),
 ]
