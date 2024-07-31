@@ -1,0 +1,28 @@
+
+   .datalist-wrapper {
+    max-height: 150px; 
+    overflow-y: auto;  
+    border: 1px solid #ccc;  
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+    background-color: rgb(161, 206, 236); 
+  }
+  
+  .datalist-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    color: black; 
+    background-color: rgb(176, 197, 243); 
+  }
+  
+  .datalist-item:hover {
+    background-color: #b9eafd;
+    color: black; 
+  }
+  
+  

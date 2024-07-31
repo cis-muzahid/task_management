@@ -13,7 +13,7 @@ function CreateTaskTitle({ show,title,setTitle,titleError,titleSuccess, handleCl
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header >
-                <Modal.Title>Create Task Title</Modal.Title>
+                <Modal.Title>Create Task Type</Modal.Title>
                 <Button variant="light" className="custom-close-btn" onClick={handleClose}>
                     <i className="fa fa-window-close" aria-hidden="true"></i>
                 </Button>
@@ -24,7 +24,7 @@ function CreateTaskTitle({ show,title,setTitle,titleError,titleSuccess, handleCl
                         <Form.Label>Name</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Enter title"
+                            placeholder="Enter task type"
                             value={title.name}
                             onChange={handleChange}
                             required

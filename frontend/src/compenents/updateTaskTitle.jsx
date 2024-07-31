@@ -7,7 +7,7 @@ function UpdateTaskTitleModal({ titleToUpdate,titleUpdateModel, handleTitleModel
         if (titleToUpdate) {
             setData({
                 id:titleToUpdate.id || '',
-                title: titleToUpdate.name || '',
+                name: titleToUpdate.name || '',
             });
         }
     }, [titleToUpdate]);
@@ -19,8 +19,8 @@ function UpdateTaskTitleModal({ titleToUpdate,titleUpdateModel, handleTitleModel
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log('update title ', data)
         handleTitleUpdate(data); 
-        // handleTodoModelClose();
     };
 
     return (
@@ -43,7 +43,7 @@ function UpdateTaskTitleModal({ titleToUpdate,titleUpdateModel, handleTitleModel
                         <Form.Control
                             type="text"
                             name="name"
-                            placeholder="Enter task title"
+                            placeholder="Enter title name"
                             value={data.name}
                             onChange={handleChange}
                             required

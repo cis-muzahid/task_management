@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import ( TaskListCreateView, TaskDetailView, MultipleTaskUpdateView, TaskStartStopView,
                     TaskDeleteView,TaskUpdateView,TaskTitleListView, TaskTitleCreateView,
-                    ToDoTaskRetrieveUpdateDestroyAPIView, ToDoTaskListCreateAPIView, TitleTaskListView , TaskTitleUpdateView, TaskTitleDeleteView)
+                    ToDoTaskRetrieveUpdateDestroyAPIView, ToDoTaskListCreateAPIView, TitleTaskListView , TaskTitleUpdateView, TaskTitleDeleteView,
+                    SetDefaultTaskTitleView)
 
 
 urlpatterns = [
@@ -20,4 +21,7 @@ urlpatterns = [
 
     path('task-title-update/<int:pk>/', TaskTitleUpdateView.as_view(), name='tasktitle-update'),
     path('task-title-delete/<int:pk>/', TaskTitleDeleteView.as_view(), name='tasktitle-delete'),
+
+    path('set-default-title/<int:id>/', SetDefaultTaskTitleView.as_view(), name='set_default_task_title'),
+
 ]

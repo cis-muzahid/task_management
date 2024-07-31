@@ -117,7 +117,7 @@ const TaskTableList = () => {
         <h1>Tasks</h1>
         <div className="row d-flex justify-content-end mb-3">
 
-          <div className="col-auto">
+          {/* <div className="col-auto">
             <div className="dropdown">
               <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Status filter
@@ -143,7 +143,7 @@ const TaskTableList = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="col-auto">
             <div className="input-group">
               <input

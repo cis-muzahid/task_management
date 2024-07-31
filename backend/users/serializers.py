@@ -48,10 +48,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         # Create TaskTitle instances for the new user
         for title in task_titles:
-            # Check if the TaskTitle with the same name already exists for the user
-            if not TaskTitle.objects.filter(user=user, name=title).exists():
-                TaskTitle.objects.create(user=user, name=title)
-
+            count = 1
+            if count == 1:
+                if not TaskTitle.objects.filter(user=user, name=title).exists():
+                    TaskTitle.objects.create(user=user, name=title, is_default=True)
+            else:
+                if not TaskTitle.objects.filter(user=user, name=title).exists():
+                    TaskTitle.objects.create(user=user, name=title)
+            count+=1
         return user
 
 

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from .models import Task, TaskTitle, ToDoTask
-from .serializers import TaskSerializer, TaskTitleSerializer, ToDoTaskSerializer, TitleTaskListSerializer
+from .serializers import TaskSerializer, TaskTitleSerializer, ToDoTaskSerializer, TitleTaskListSerializer, TaskTitleUpdateSerializer, TaskUpdateDefaultSerializer
 from users.serializers import CustomUserSerializer
 from django.utils.dateparse import parse_date
 
@@ -156,8 +156,17 @@ class TaskTitleListView(generics.ListAPIView):
     serializer_class = TaskTitleSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    # def get_queryset(self):
+    #     return TaskTitle.objects.filter(user=self.request.user)
     def get_queryset(self):
-        return TaskTitle.objects.filter(user=self.request.user)
+        user = self.request.user
+        queryset = TaskTitle.objects.filter(user=user).order_by('-id')
+        search = self.request.query_params.get('search', '')
+
+        if search:
+            queryset = queryset.filter(name__icontains=search) 
+
+        return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -183,7 +192,7 @@ class ToDoTaskListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return ToDoTask.objects.filter(user=self.request.user)
+        return ToDoTask.objects.filter(user=self.request.user).order_by('-id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -205,7 +214,7 @@ class TitleTaskListView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         # breakpoint()
-        queryset = TaskTitle.objects.filter(user=user)
+        queryset = TaskTitle.objects.filter(user=user).order_by('-id')
         search = self.request.query_params.get('search', '')
 
         if search:
@@ -221,10 +230,28 @@ class TitleTaskListView(generics.ListCreateAPIView):
 
 class TaskTitleUpdateView(generics.UpdateAPIView):
     queryset = TaskTitle.objects.all()
-    serializer_class = TaskTitleSerializer
+    serializer_class = TaskTitleUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class TaskTitleDeleteView(generics.DestroyAPIView):
     queryset = TaskTitle.objects.all()
     serializer_class = TaskTitleSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class SetDefaultTaskTitleView(APIView):
+
+    def post(self, request, id):
+        try:
+            default_task_title = TaskTitle.objects.get(id=id)
+        except TaskTitle.DoesNotExist:
+            return Response({'error': 'Task title not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        TaskTitle.objects.exclude(id=id).update(is_default=False)
+
+        default_task_title.is_default = True
+        default_task_title.save()
+
+        all_task_titles = TaskTitle.objects.all()
+        all_titles_serializer = TaskUpdateDefaultSerializer(all_task_titles, many=True)
+        return Response(all_titles_serializer.data, status=status.HTTP_200_OK)

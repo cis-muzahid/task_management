@@ -33,3 +33,28 @@ export const CreateQueryString = (data) => {
     }
     return params.toString();
   };
+
+
+export const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+  
+    // Extract date components
+    const month = date.getMonth() + 1; // getMonth() returns 0-11
+    const day = date.getDate();
+    const year = date.getFullYear();
+  
+    // Extract time components
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+  
+    // Format components with leading zeros if necessary
+    const monthFormatted = month < 10 ? `0${month}` : month;
+    const dayFormatted = day < 10 ? `0${day}` : day;
+    const hoursFormatted = hours < 10 ? `0${hours}` : hours;
+    const minutesFormatted = minutes < 10 ? `0${minutes}` : minutes;
+    const secondsFormatted = seconds < 10 ? `0${seconds}` : seconds;
+  
+    // Return formatted date-time string
+    return `${monthFormatted}-${dayFormatted}-${year} ${hoursFormatted}:${minutesFormatted}:${secondsFormatted}`;
+  }

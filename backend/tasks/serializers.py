@@ -33,6 +33,17 @@ class TaskTitleSerializer(serializers.ModelSerializer):
         
         return data
 
+class TaskUpdateDefaultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskTitle
+        fields = ['id', 'name', 'is_default']
+
+class TaskTitleUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskTitle
+        fields = ['id', 'name']
+
+
 class TitleTaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskTitle

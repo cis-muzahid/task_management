@@ -1,26 +1,36 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import '../assest/css/dashboard.css'
-import 'react-toastify/dist/ReactToastify.css';
+import "../assest/css/dashboard.css";
+import "react-toastify/dist/ReactToastify.css";
 import NavigationBar from "../compenents/NavBar";
 import TaskCreate from "../compenents/todoTaskCreate";
 import TaskCard from "../compenents/taskCardList";
 import TaskStarted from "../compenents/TaskStarted";
-import { GetAlertTimeAPI, GetTaskTitleAPI, TaskCreateAPI, TaskListAPI, TodoCreateAPI, TodoDeleteAPI, TodoListAPI, TodoUpdateAPI, UpdateTaskAPI } from "../services/apiContext";
+import {
+  GetAlertTimeAPI,
+  GetTaskTitleAPI,
+  GetTaskTitleList,
+  TaskCreateAPI,
+  TaskListAPI,
+  TodoCreateAPI,
+  TodoDeleteAPI,
+  TodoListAPI,
+  TodoUpdateAPI,
+  UpdateTaskAPI,
+} from "../services/apiContext";
 import AlertModel from "../compenents/alertModel";
 import TodoCreate from "../compenents/todoCreate";
 import TodoCard from "../compenents/todoCard";
 import UpdateTaskModal from "../compenents/updateTaskModel";
 import UpdateTodoModal from "../compenents/updateTodoModel";
-import NotificationSound from '../assest/audio/mixkit-happy-bells-notification-937.mp3'
+import NotificationSound from "../assest/audio/mixkit-happy-bells-notification-937.mp3";
 import { TimerContext } from "../services/TimerContext";
 import showWarningToast from "../compenents/warningToaster";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import showSuccessToast from "../compenents/successToaster";
 
 function Dashboard() {
-
-
-  const { time, isRunning, resetTimer, setTime, setIsRunning } = useContext(TimerContext);
-
+  const { time, isRunning, resetTimer, setTime, setIsRunning } =
+    useContext(TimerContext);
 
   const audioPlayer = useRef(null);
   const [audioPlayed, setAudioPlayed] = useState(false);
@@ -29,21 +39,20 @@ function Dashboard() {
 
   const [pendingTasks, setPendingTasks] = useState([]);
   const [startedTask, setStartedTask] = useState({});
-  const [taskTitles, setTaskTitles] = useState([])
+  const [taskTitles, setTaskTitles] = useState([]);
   const [todaysTask, setTodaysTask] = useState([]);
+  const [defaultTitle, setDefaultTitle] = useState(null);
 
-
-  const [todoError, setTodoError] = useState('');
+  const [todoError, setTodoError] = useState("");
   const [todos, setTodos] = useState([]);
   const [todoUpdateModel, setTodoUpdateModel] = useState(false);
   const [todoToUpdate, setTodoToUpdate] = useState({
-    title: '',
-    description: '',
-    status: ''
+    title: "",
+    description: "",
+    status: "",
   });
 
-
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState("");
 
   const [showTaskUpdateModal, setShowTaskUpdateModal] = useState(false);
   const [taskToUpdate, setTaskToUpdate] = useState(null);
@@ -52,9 +61,8 @@ function Dashboard() {
   const [modalMessage, setModalMessage] = useState("");
 
   const handleStart = () => {
-    setIsRunning(true)
+    setIsRunning(true);
   };
-
 
   const playAudio = () => {
     if (audioPlayer.current) {
@@ -62,10 +70,10 @@ function Dashboard() {
       audioPlayer.current
         .play()
         .then(() => {
-          console.log('Audio played successfully');
+          console.log("Audio played successfully");
         })
         .catch((error) => {
-          console.error('Failed to play audio:', error);
+          console.error("Failed to play audio:", error);
         });
     }
   };
@@ -73,8 +81,11 @@ function Dashboard() {
   useEffect(() => {
     if (isRunning) {
       let TotalTimeInMinutes = Math.floor(time / 60);
-      if (!audioPlayed && startedTask.total_time_to_complete === TotalTimeInMinutes) {
-        showWarningToast("Time exceeded add some more time")
+      if (
+        !audioPlayed &&
+        startedTask.total_time_to_complete === TotalTimeInMinutes
+      ) {
+        showWarningToast("Time exceeded add some more time");
         playAudio();
         setAudioPlayed(true);
       }
@@ -86,11 +97,17 @@ function Dashboard() {
       const response = await TaskListAPI();
       if (response.status === 200) {
         setTasks(response.data);
-        const startedTask = response.data.find(task => task.status === 'started');
-        const pendingTask = response.data.filter(task => task.status === 'pending');
-        const completedTask = response.data.filter(task => task.status === 'completed');
+        const startedTask = response.data.find(
+          (task) => task.status === "started"
+        );
+        const pendingTask = response.data.filter(
+          (task) => task.status === "pending"
+        );
+        const completedTask = response.data.filter(
+          (task) => task.status === "completed"
+        );
 
-        const todaysTasks = completedTask.filter(task => {
+        const todaysTasks = completedTask.filter((task) => {
           const taskStartDate = new Date(task.start_time);
           const today = new Date();
           return taskStartDate.toDateString() === today.toDateString();
@@ -110,10 +127,14 @@ function Dashboard() {
           setStartedTask(startedTask);
 
           const taskStartTimeUTC = new Date(startedTask.start_time);
-          const taskStartTimeIST = new Date(taskStartTimeUTC.getTime() + (330 * 60 * 1000));
+          const taskStartTimeIST = new Date(
+            taskStartTimeUTC.getTime() + 330 * 60 * 1000
+          );
 
           const currentTimeUTC = new Date();
-          const currentTimeIST = new Date(currentTimeUTC.getTime() + (330 * 60 * 1000));
+          const currentTimeIST = new Date(
+            currentTimeUTC.getTime() + 330 * 60 * 1000
+          );
 
           const elapsedTime = currentTimeIST - taskStartTimeIST;
           const elapsedTimeInSeconds = Math.floor(elapsedTime / 1000);
@@ -121,10 +142,10 @@ function Dashboard() {
           setIsRunning(true);
         }
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -132,12 +153,15 @@ function Dashboard() {
     try {
       const response = await GetAlertTimeAPI();
       if (response.status === 200) {
-        localStorage.setItem("time_to_complete", response.data.default_alert_time);
+        localStorage.setItem(
+          "time_to_complete",
+          response.data.default_alert_time
+        );
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -145,29 +169,34 @@ function Dashboard() {
     try {
       const response = await TodoListAPI();
       if (response.status === 200) {
-        setTodos(response.data)
+        setTodos(response.data);
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   const fetchTaskTitle = async () => {
     try {
-      const response = await GetTaskTitleAPI();
+      const response = await GetTaskTitleList();
       if (response.status === 200) {
-        setTaskTitles(response.data)
+        const newTaskTitles = response.data.map((task) => task.name);
+        setTaskTitles(newTaskTitles);
+        if (Array.isArray(response.data)) {
+          const newDefaultTitle = response.data.find(
+            (obj) => obj.is_default === true
+          );
+          setDefaultTitle(newDefaultTitle);
+        }
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
-
-
 
   useEffect(() => {
     fetchTasks();
@@ -176,13 +205,11 @@ function Dashboard() {
     fetchTaskTitle();
   }, []);
 
-
-
   const addTask = async (newTask) => {
     try {
       const response = await TaskCreateAPI(newTask);
       if (response.status !== 201) {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
 
       const createdTask = response.data;
@@ -194,57 +221,66 @@ function Dashboard() {
       }
 
       await startNewTask(createdTask);
-
+      // const newDefaultTitle = taskTitles.find((obj) => obj.is_default === true);
+      // setDefaultTitle(newDefaultTitle);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
-
   const completeCurrentTask = async () => {
-    const completedTask = { ...startedTask, end_time: new Date().toISOString(), status: 'completed' };
+    const completedTask = {
+      ...startedTask,
+      end_time: new Date().toISOString(),
+      status: "completed",
+    };
     try {
       const response = await UpdateTaskAPI(completedTask);
       if (response.status === 200) {
         setStartedTask({});
-        setTasks(prevTasks => prevTasks.map(task =>
-          task.id === completedTask.id ? { ...task, ...response.data } : task
-        ));
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === completedTask.id ? { ...task, ...response.data } : task
+          )
+        );
         setTodaysTask([...todaysTask, response.data]);
-        resetTimer()
+        resetTimer();
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
-
   const startNewTask = async (task) => {
-    const updatedTask = { ...task, start_time: new Date().toISOString(), status: 'started' };
+    const updatedTask = {
+      ...task,
+      start_time: new Date().toISOString(),
+      status: "started",
+    };
     try {
       const response = await UpdateTaskAPI(updatedTask);
       if (response.status === 200) {
         setStartedTask(response.data);
-        setIsRunning(true)
-        setTime(0)
+        setIsRunning(true);
+        setTime(0);
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   const handleShowTaskUpdateModal = (taskToUpdate) => {
-    setTaskToUpdate(taskToUpdate)
-    setShowTaskUpdateModal(true)
-  }
+    setTaskToUpdate(taskToUpdate);
+    setShowTaskUpdateModal(true);
+  };
 
   const CloseShowTaskUpdateModal = () => {
     setShowTaskUpdateModal(false);
-  }
+  };
 
   const updateTask = async (updatedTask) => {
     try {
@@ -255,20 +291,26 @@ function Dashboard() {
             task.id === updatedTask.id ? { ...task, ...response.data } : task
           )
         );
-        setStartedTask(response.data)
-        setAudioPlayed(false)
+        setStartedTask(response.data);
+        setAudioPlayed(false);
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-    const updatedTasks = tasks.map(t => (t.id === updatedTask.id ? updatedTask : t));
+    const updatedTasks = tasks.map((t) =>
+      t.id === updatedTask.id ? updatedTask : t
+    );
     setTasks(updatedTasks);
   };
 
   const CompleteTask = async (task) => {
-    const updatedTask = { ...task, end_time: new Date().toISOString(), status: 'completed' };
+    const updatedTask = {
+      ...task,
+      end_time: new Date().toISOString(),
+      status: "completed",
+    };
     try {
       const response = await UpdateTaskAPI(updatedTask);
       if (response.status === 200) {
@@ -278,18 +320,18 @@ function Dashboard() {
           )
         );
         setTodaysTask([...todaysTask, response.data]);
-        setStartedTask({})
-        resetTimer()
-        setModalMessage("Task completed successfully!");
-        setShowModal(true);
+        setStartedTask({});
+        resetTimer();
+        // setModalMessage("Task completed successfully!");
+        // setShowModal(true);
+        showSuccessToast("Task Completed Successfully")
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
-
+  };
 
   const isEmptyObject = (obj) => {
     return Object.keys(obj).length === 0;
@@ -302,13 +344,14 @@ function Dashboard() {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const remainingSeconds = totalSeconds % 60;
 
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
   };
-
 
   const CreateTodo = async (data) => {
     try {
@@ -316,46 +359,48 @@ function Dashboard() {
       if (response.status === 201) {
         const updatedTodos = [...todos, response.data];
         setTodos(updatedTodos);
-        setModalMessage("Todo created successfully!");
-        setShowModal(true);
+        // setModalMessage("Todo created successfully!");
+        // setShowModal(true);
+        showSuccessToast("Todo Created Successfully")
       } else {
-        setTodoError(response.message)
+        setTodoError(response.message);
       }
     } catch (error) {
       if (error.response) {
         console.error("Error", error.response.data.title[0]);
-        setTodoError(error.response.data.title[0] || 'Some error occurs please try again')
+        setTodoError(
+          error.response.data.title[0] || "Some error occurs please try again"
+        );
       } else {
-        setTodoError('Some error occurs please try again')
+        setTodoError("Some error occurs please try again");
       }
     }
-  }
-
+  };
 
   const HandleTodoDelate = async (id) => {
     try {
       const response = await TodoDeleteAPI(id);
       if (response.status === 204) {
-        const updatedTodos = todos.filter(t => t.id !== id);
+        const updatedTodos = todos.filter((t) => t.id !== id);
         setTodos(updatedTodos);
         setModalMessage("Todo deleted successfully!");
         setShowModal(true);
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
+  };
 
   const ShowTodoUpdateModel = (todo) => {
-    setTodoToUpdate(todo)
-    setTodoUpdateModel(true)
-  }
+    setTodoToUpdate(todo);
+    setTodoUpdateModel(true);
+  };
 
   const HandleTodoModelClose = () => {
-    setTodoUpdateModel(false)
-  }
+    setTodoUpdateModel(false);
+  };
 
   const HandleTodoUpdate = async (todo) => {
     try {
@@ -369,15 +414,15 @@ function Dashboard() {
         setModalMessage("Todo updated successfully!");
         setShowModal(true);
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
+  };
 
   const HandleTodoComplete = async (todo) => {
-    const updateTodo = { ...todo, status: 'COMPLETED' }
+    const updateTodo = { ...todo, status: "COMPLETED" };
     try {
       const response = await TodoUpdateAPI(updateTodo);
       if (response.status === 200) {
@@ -389,20 +434,21 @@ function Dashboard() {
         setModalMessage("Todo Completed successfully!");
         setShowModal(true);
       } else {
-        console.error('Error:', response);
+        console.error("Error:", response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
-
+  };
 
   const handleFilterChange = async (e) => {
     const filter_data = e.target.value;
-    setFilter(filter_data)
+    setFilter(filter_data);
 
-    const filteredTasks = tasks.filter(task => {
-      const matchesTitle = filter_data ? task.title.toLowerCase().includes(filter_data.toLowerCase()) : true;
+    const filteredTasks = tasks.filter((task) => {
+      const matchesTitle = filter_data
+        ? task.title.toLowerCase().includes(filter_data.toLowerCase())
+        : true;
 
       const taskStartDate = new Date(task.start_time);
       const today = new Date();
@@ -418,7 +464,6 @@ function Dashboard() {
       <NavigationBar />
       <div className="container-fluid">
         <div className="row">
-
           <div className="col-md-8 ">
             <div className="text-center mb-4 mt-5">
               {/* <h2 className="text-bold">RUNNING TASK</h2> */}
@@ -443,18 +488,22 @@ function Dashboard() {
               <h3 className="">CREATE TASK</h3>
             </div> */}
 
-            <TaskCreate onAddTask={addTask} taskTitles={taskTitles} />
+            <TaskCreate
+              onAddTask={addTask}
+              taskTitles={taskTitles}
+              defaultTitle={defaultTitle}
+            />
 
             <div className="container mt-5">
               {/* <div className="text-center mt-5 h3 mb-3">TODAY TASKS </div> */}
-              <div className='container'>
+              <div className="container">
                 <div className="row d-flex justify-content-end mb-3">
                   <div className="col-auto">
                     <div className="input-group">
                       <div className="input-group">
                         <input
                           type="text"
-                          placeholder='Search'
+                          placeholder="Search"
                           className="form-control"
                           value={filter}
                           name="search"
@@ -469,31 +518,30 @@ function Dashboard() {
                 <thead>
                   <tr>
                     <th scope="col">Time(min) </th>
-                    <th scope="col">Title</th>
+                    <th scope="col">Task Type</th>
                     <th scope="col">Description</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {todaysTask.sort((a, b) => b.id - a.id).map((task, index) => {
-                    const taskStartDate = new Date(task.start_time);
-                    const today = new Date();
-                    const isStartDateToday = taskStartDate.toDateString() === today.toDateString();
-                    if (isStartDateToday) {
-                      return (
-                        <tr key={index}>
-                          <TaskCard
-                            task={task}
-                          />
-                        </tr>
-                      );
-                    }
-                    return null;
-                  })}
+                  {todaysTask
+                    .sort((a, b) => b.id - a.id)
+                    .map((task, index) => {
+                      const taskStartDate = new Date(task.start_time);
+                      const today = new Date();
+                      const isStartDateToday =
+                        taskStartDate.toDateString() === today.toDateString();
+                      if (isStartDateToday) {
+                        return (
+                          <tr key={index}>
+                            <TaskCard task={task} />
+                          </tr>
+                        );
+                      }
+                      return null;
+                    })}
                 </tbody>
               </table>
             </div>
-
-
           </div>
 
           <div className="col-md-4 section-border">
@@ -535,11 +583,12 @@ function Dashboard() {
           handleClose={CloseShowTaskUpdateModal}
           handleUpdate={updateTask}
           taskToUpdate={taskToUpdate}
+          taskTitles={taskTitles}
         />
       )}
       <ToastContainer />
       <audio ref={audioPlayer} src={NotificationSound} />
     </>
   );
-};
+}
 export default Dashboard;
