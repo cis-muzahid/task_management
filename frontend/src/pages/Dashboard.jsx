@@ -27,6 +27,7 @@ import { TimerContext } from "../services/TimerContext";
 import showWarningToast from "../compenents/warningToaster";
 import { ToastContainer } from "react-toastify";
 import showSuccessToast from "../compenents/successToaster";
+import showAlertToast from "../compenents/alertToast";
 
 function Dashboard() {
   const { time, isRunning, resetTimer, setTime, setIsRunning } =
@@ -34,6 +35,9 @@ function Dashboard() {
 
   const audioPlayer = useRef(null);
   const [audioPlayed, setAudioPlayed] = useState(false);
+  const [lastPlayedTime, setLastPlayedTime] = useState(
+    Number(localStorage.getItem("lastAudioPlayedTime")) || 0
+  );
 
   const [tasks, setTasks] = useState([]);
 
@@ -66,7 +70,6 @@ function Dashboard() {
 
   const playAudio = () => {
     if (audioPlayer.current) {
-      audioPlayer.current.load();
       audioPlayer.current
         .play()
         .then(() => {
@@ -78,19 +81,38 @@ function Dashboard() {
     }
   };
 
+  // useEffect(() => {
+  //   if (isRunning) {
+  //     let TotalTimeInMinutes = Math.floor(time / 60);
+  //     if (
+  //       !audioPlayed &&
+  //       startedTask.total_time_to_complete === TotalTimeInMinutes
+  //     ) {
+  //       showWarningToast("Time exceeded add some more time");
+  //       playAudio();
+  //       setAudioPlayed(true);
+  //     }
+  //   }
+  // }, [isRunning, audioPlayed, time]);
+
   useEffect(() => {
     if (isRunning) {
-      let TotalTimeInMinutes = Math.floor(time / 60);
-      if (
-        !audioPlayed &&
-        startedTask.total_time_to_complete === TotalTimeInMinutes
-      ) {
-        showWarningToast("Time exceeded add some more time");
-        playAudio();
-        setAudioPlayed(true);
+      const TotalTimeInMinutes = Math.floor(time / 60);
+      const timeToComplete = startedTask.total_time_to_complete || 0;
+      const currentTime = Math.floor(Date.now() / 60000);
+      const timerTimeMinute = time / 60;
+      if (TotalTimeInMinutes >= timeToComplete) {
+        console.log(currentTime,lastPlayedTime,currentTime - lastPlayedTime == 1);
+
+        if (timerTimeMinute - lastPlayedTime == 1) {
+          showWarningToast("Time exceeded, add some more time");
+          playAudio();
+          const timeCount = lastPlayedTime + 1;
+          localStorage.setItem('lastAudioPlayedTime',timeCount)
+        }
       }
-    }
-  }, [isRunning, audioPlayed, time]);
+    } 
+  }, [isRunning, time, startedTask,lastPlayedTime]);
 
   const fetchTasks = async () => {
     try {
@@ -219,7 +241,7 @@ function Dashboard() {
       if (startedTask) {
         await completeCurrentTask();
       }
-
+      
       await startNewTask(createdTask);
       // const newDefaultTitle = taskTitles.find((obj) => obj.is_default === true);
       // setDefaultTitle(newDefaultTitle);
@@ -245,6 +267,7 @@ function Dashboard() {
         );
         setTodaysTask([...todaysTask, response.data]);
         resetTimer();
+        localStorage.removeItem('lastAudioPlayedTime')
       } else {
         console.error("Error:", response);
       }
@@ -265,6 +288,8 @@ function Dashboard() {
         setStartedTask(response.data);
         setIsRunning(true);
         setTime(0);
+        showSuccessToast("Task Started Successfully");
+        localStorage.setItem('lastAudioPlayedTime',0)
       } else {
         console.error("Error:", response);
       }
@@ -293,6 +318,7 @@ function Dashboard() {
         );
         setStartedTask(response.data);
         setAudioPlayed(false);
+        showSuccessToast("Task Updated Successfuly");
       } else {
         console.error("Error:", response);
       }
@@ -324,7 +350,7 @@ function Dashboard() {
         resetTimer();
         // setModalMessage("Task completed successfully!");
         // setShowModal(true);
-        showSuccessToast("Task Completed Successfully")
+        showSuccessToast("Task Completed Successfully");
       } else {
         console.error("Error:", response);
       }
@@ -361,7 +387,7 @@ function Dashboard() {
         setTodos(updatedTodos);
         // setModalMessage("Todo created successfully!");
         // setShowModal(true);
-        showSuccessToast("Todo Created Successfully")
+        showSuccessToast("Todo Created Successfully");
       } else {
         setTodoError(response.message);
       }
@@ -383,8 +409,7 @@ function Dashboard() {
       if (response.status === 204) {
         const updatedTodos = todos.filter((t) => t.id !== id);
         setTodos(updatedTodos);
-        setModalMessage("Todo deleted successfully!");
-        setShowModal(true);
+        showAlertToast("Todo Deleted !");
       } else {
         console.error("Error:", response);
       }
@@ -411,8 +436,7 @@ function Dashboard() {
             t.id === todo.id ? { ...t, ...response.data } : t
           )
         );
-        setModalMessage("Todo updated successfully!");
-        setShowModal(true);
+        showSuccessToast("Todo Updated Successfuly");
       } else {
         console.error("Error:", response);
       }
@@ -431,8 +455,7 @@ function Dashboard() {
             todo.id === updateTodo.id ? { ...todo, ...response.data } : todo
           )
         );
-        setModalMessage("Todo Completed successfully!");
-        setShowModal(true);
+        showSuccessToast("Todo Completed Successfuly");
       } else {
         console.error("Error:", response);
       }

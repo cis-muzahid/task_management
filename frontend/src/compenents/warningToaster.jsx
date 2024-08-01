@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const showWarningToast = (message) => {
   toast.warn(message, {
     position: 'top-right',
-    autoClose: false,                
+    autoClose: true,                
     hideProgressBar: false,           
     closeOnClick: true,          
     pauseOnHover: true,              

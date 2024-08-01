@@ -86,7 +86,7 @@ function UpdateTaskModal({
               value={data.title}
               onChange={handleChange}
               onFocus={ShowDataList}
-            //   onBlur={HideDataList}
+              onBlur={HideDataList}
               required
             />
                     {showDropdown && (

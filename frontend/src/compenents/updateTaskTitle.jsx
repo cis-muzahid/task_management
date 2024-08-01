@@ -11,7 +11,7 @@ function UpdateTaskTitleModal({ titleToUpdate,titleUpdateModel, handleTitleModel
             });
         }
     }, [titleToUpdate]);
-
+    
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({ ...prevData, [name]: value }));
@@ -26,9 +26,7 @@ function UpdateTaskTitleModal({ titleToUpdate,titleUpdateModel, handleTitleModel
     return (
         <Modal
             show={titleUpdateModel}
-            onHide={() => {
-                handleTitleModelClose();
-            }}
+            onHide={handleTitleModelClose}
         >
             <Modal.Header >
                 <Modal.Title>Update Task</Modal.Title>

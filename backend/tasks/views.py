@@ -203,7 +203,7 @@ class ToDoTaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return ToDoTask.objects.filter(user=self.request.user)
+        return ToDoTask.objects.filter(user=self.request.user).order_by('-id')
 
 
 class TitleTaskListView(generics.ListCreateAPIView):
@@ -252,6 +252,6 @@ class SetDefaultTaskTitleView(APIView):
         default_task_title.is_default = True
         default_task_title.save()
 
-        all_task_titles = TaskTitle.objects.all()
+        all_task_titles = TaskTitle.objects.filter(user=self.request.user).order_by('-id')
         all_titles_serializer = TaskUpdateDefaultSerializer(all_task_titles, many=True)
         return Response(all_titles_serializer.data, status=status.HTTP_200_OK)

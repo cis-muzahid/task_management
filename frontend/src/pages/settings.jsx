@@ -17,6 +17,9 @@ import AlertModel from "../compenents/alertModel";
 import UpdateTaskTitleModal from "../compenents/updateTaskTitle";
 import SettingTaskTable from "../compenents/SettingTaskTable";
 import { CreateQueryString } from "../utils/utitlity";
+import showAlertToast from "../compenents/alertToast";
+import { ToastContainer } from "react-toastify";
+import showSuccessToast from "../compenents/successToaster";
 
 function Settings() {
   const [userdetail, setUserdetail] = useState({});
@@ -76,7 +79,7 @@ function Settings() {
   const handleShowPasswordChangeModel = () => setShowPasswordChangeModel(true);
 
   const CloseModal = () => setShowModal(false);
-  const CloseCreateModal = () => {
+  const CloseTitleCreateModal = () => {
     setShowTitleModal(false);
     setTitle({ ...title, name: "" });
     setTitleError("");
@@ -85,23 +88,20 @@ function Settings() {
   const ClosePasswordChangeModel = () => setShowPasswordChangeModel(false);
 
   const handleCreateTaskTitle = async (title) => {
+    debugger
     try {
       const response = await CreateTaskTitleAPI(title);
       if (response.status === 201) {
         setTitle({ ...title, name: "" });
         const updatedTitles = [...titles, response.data];
         setTitles(updatedTitles);
-        setTitleSuccess("Task Type created successfully");
-        
-        // const timer = setTimeout(() => {
-        //     console.log("timmmmerrr")
-        //   }, 100);
-        // clearTimeout(timer);  
+        showSuccessToast("Task type created successfully!")
+        CloseTitleCreateModal()
       } else {
         console.error("Error:", response);
         setTitleError(response.data.name[0]);
       }
-      HandleTitleModelClose()
+      
     } catch (error) {
       if (error.response) {
         if (error.response.data.name) {
@@ -134,6 +134,7 @@ function Settings() {
           ...prevUserDetail,
           ...response.data,
         }));
+        showSuccessToast("Alert time updated successfully");
       } else {
         console.error("Error:", response);
       }
@@ -151,7 +152,8 @@ function Settings() {
     try {
       const response = await ChangePasswordAPI(data);
       if (response.status === 200) {
-        setPassowrdSuccess("Password changed successfully");
+        showSuccessToast("Password changed successfully");
+        ClosePasswordChangeModel()  
       } else {
         console.error("Error:", response);
         setPassowrdError(
@@ -205,8 +207,7 @@ function Settings() {
       if (response.status === 204) {
         const updatedTitles = titles.filter((t) => t.id !== id);
         setTitles(updatedTitles);
-        setModalMessage("Task Deleted Successfully");
-        setShowMessageModal(true);
+        showAlertToast("Task Type Deleted")
       } else {
         console.error("Error:", response);
       }
@@ -225,11 +226,9 @@ function Settings() {
   };
 
   const HandleTitleUpdate = async (updatedTitle) => {
-    console.log("updated");
     try {
       const response = await TitleUpdateAPI(updatedTitle);
       if (response.status === 200) {
-        console.log(response.data);
         setTitles((prevTitles) =>
           prevTitles.map((title) =>
             title.id === updatedTitle.id
@@ -238,6 +237,7 @@ function Settings() {
           )
         );
         setTitleToUpdate(null);
+        showSuccessToast("Task Updated Successfully");
       }
       // CloseShowTaskUpdateModal();
     } catch (error) {
@@ -253,9 +253,7 @@ function Settings() {
     try {
       const response = await SetDefaultTitleAPI(id);
       if (response.status === 200) {
-        console.log(response.data);
-        setModalMessage("Default title has been set successfully!");
-        setShowMessageModal();
+        showSuccessToast("Default title has been set successfully!")
         setTitles(response.data);
       }
     } catch (error) {
@@ -326,16 +324,18 @@ function Settings() {
         />
       </div>
 
-      <CreateTaskTitle
+      {
+        showTitleModal &&(
+        <CreateTaskTitle
         show={showTitleModal}
         title={title}
         setTitle={setTitle}
         titleError={titleError}
         titleSuccess={titleSuccess}
-        handleClose={CloseCreateModal}
+        handleClose={CloseTitleCreateModal}
         handleCreate={handleCreateTaskTitle}
         defaultAlertTime={userdetail.default_alert_time}
-      />
+      />)}
       <ChangePassword
         show={showPasswordChangeModel}
         passowrdError={passowrdError}
@@ -359,6 +359,7 @@ function Settings() {
           handleTitleUpdate={HandleTitleUpdate}
         />
       )}
+      <ToastContainer />
     </>
   );
 }

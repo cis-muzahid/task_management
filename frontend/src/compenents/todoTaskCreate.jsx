@@ -162,7 +162,7 @@ const TaskCreate = ({ onAddTask, taskTitles, defaultTitle }) => {
                     </div> */}
 
                     {showDropdown && (
-                      <div className="datalist-wrapper" id="popular-titles">
+                      <div className="datalist-wrapper-create" id="popular-titles">
                         {datalist.map((title, index) => (
                           <div
                             key={index}

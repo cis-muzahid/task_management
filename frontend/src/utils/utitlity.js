@@ -2,21 +2,21 @@ export const storeTokensInSession = (Authentication) => {
     const accessToken = Authentication.access;
     const refreshToken = Authentication.refresh;
 
-    sessionStorage.setItem("usr_1a2b3c", accessToken);
-    sessionStorage.setItem("usr_1a2b3r", refreshToken);
+    localStorage.setItem("usr_1a2b3c", accessToken);
+    localStorage.setItem("usr_1a2b3r", refreshToken);
     return true
 }
 
 
 export const getAccessTokenSession = () => {
-    const accessToken = sessionStorage.getItem("usr_1a2b3c");
+    const accessToken = localStorage.getItem("usr_1a2b3c");
     // const refreshToken = sessionStorage.getItem("usr_4d5e6f");
     return accessToken;
 }
 
 
 export const removeTokensSession = () => {
-    sessionStorage.removeItem('usr_1a2b3c');
+    localStorage.removeItem('usr_1a2b3c');
 }
 
 
