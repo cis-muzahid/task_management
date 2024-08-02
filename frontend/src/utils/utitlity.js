@@ -17,6 +17,16 @@ export const getAccessTokenSession = () => {
 
 export const removeTokensSession = () => {
     localStorage.removeItem('usr_1a2b3c');
+    localStorage.removeItem('usr_1a2b3r');
+    localStorage.removeItem('started_task_time_to_complete');
+    localStorage.removeItem('timer-isRunning');
+    localStorage.removeItem('timer-time');
+    localStorage.removeItem('started_task_start_date');
+    localStorage.removeItem('time_to_complete');
+    localStorage.removeItem('default_title');
+    localStorage.removeItem('lastAudioPlayedTime');
+    localStorage.removeItem('timer-time');
+    localStorage.removeItem('timer-isRunning');
 }
 
 

@@ -211,3 +211,13 @@ export const SetDefaultTitleAPI = async (id) => {
         throw error; 
     }
 };
+
+export const GetStartedTaskAPI = async () => {
+    try {
+        const response = await axiosInstanceWithInterceptors.post(`api/tasks/started-tasks/`, {headers});
+        return response;
+    } catch (error) {
+        console.error('Error creating task:', error);
+        throw error; 
+    }
+};

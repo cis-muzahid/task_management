@@ -45,7 +45,7 @@ const TodoCreate = ({onCreateTodo,todoError}) => {
 
   return (
     <div className='container mt-5'>
-      <div className="card">
+      <div className="">
         <div className="card-body">
           <div className="row align-items-center">
             {/* <div className="col-md-4">

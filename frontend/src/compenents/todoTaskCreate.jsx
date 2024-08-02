@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "../assest/css/datalist.css";
 import { GetTaskTitleList } from "../services/apiContext";
-const TaskCreate = ({ onAddTask, taskTitles, defaultTitle }) => {
+const TaskCreate = ({ onAddTask, taskTitles, defaultTitle, defaultTimeToComplete }) => {
   // console.log(defaultTitle)
   const initialData = {
-    title: "",
+    title:  "",
     description: "",
     total_time_to_complete: "",
     status: "started",
@@ -16,20 +16,24 @@ const TaskCreate = ({ onAddTask, taskTitles, defaultTitle }) => {
   const [datalist, setDatalist] = useState(false);
 
   useEffect(() => {
-    console.log("runnninggggg");
-    if (defaultTitle) {
-      setData((prevData) => ({
-        ...prevData,
-        total_time_to_complete:
-          Number(localStorage.getItem("time_to_complete")) || "",
-        title: defaultTitle.name || "",
-      }));
-    }
+    setData((prevData) => ({
+      ...prevData,
+      title: localStorage.getItem("default_title") || "",
+      total_time_to_complete:
+        Number(localStorage.getItem("time_to_complete")) || "",
+    }));
+  }, []);
+
+  useEffect(() => {
     if (taskTitles) {
       setDatalist(taskTitles);
     }
-  }, [taskTitles]);
-
+    setData((prevData) => ({
+      ...prevData,
+      title: defaultTitle || "",
+      total_time_to_complete: defaultTimeToComplete || ""
+    }));
+  }, [taskTitles, defaultTitle]);
 
   const handleAddMinutes = () => {
     setData((prevData) => ({
@@ -72,10 +76,8 @@ const TaskCreate = ({ onAddTask, taskTitles, defaultTitle }) => {
       onAddTask(data);
       setData((prevData) => ({
         ...prevData,
-        total_time_to_complete: Number(
-          localStorage.getItem("time_to_complete")
-        ),
-        title: "",
+        total_time_to_complete: Number(localStorage.getItem("time_to_complete")),
+        title: localStorage.getItem("default_title"),
         description: "",
       }));
     }
@@ -99,7 +101,7 @@ const TaskCreate = ({ onAddTask, taskTitles, defaultTitle }) => {
 
   return (
     <div className="container mt-5">
-      <div className="card">
+      <div className="">
         <div className="card-body">
           <div className="row align-items-center">
             <div className="col-md-2">
@@ -162,7 +164,10 @@ const TaskCreate = ({ onAddTask, taskTitles, defaultTitle }) => {
                     </div> */}
 
                     {showDropdown && (
-                      <div className="datalist-wrapper-create" id="popular-titles">
+                      <div
+                        className="datalist-wrapper-create"
+                        id="popular-titles"
+                      >
                         {datalist.map((title, index) => (
                           <div
                             key={index}

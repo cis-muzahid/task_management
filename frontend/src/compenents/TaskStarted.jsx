@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 const TaskStarted = ({ task, timerRunning, onHandleComplete, showTaskUpdateModel }) => {
-
   const handleComplete = () => {
     onHandleComplete(task);
   };
@@ -9,7 +8,7 @@ const TaskStarted = ({ task, timerRunning, onHandleComplete, showTaskUpdateModel
   return (
     <>
       <div className='container mt-5'>
-        <div className="card">
+        <div className="">
           <div className="card-body">
             <div className="row align-items-center">
               <div className="col-md-4">

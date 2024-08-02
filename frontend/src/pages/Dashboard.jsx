@@ -7,6 +7,7 @@ import TaskCard from "../compenents/taskCardList";
 import TaskStarted from "../compenents/TaskStarted";
 import {
   GetAlertTimeAPI,
+  GetStartedTaskAPI,
   GetTaskTitleAPI,
   GetTaskTitleList,
   TaskCreateAPI,
@@ -28,6 +29,7 @@ import showWarningToast from "../compenents/warningToaster";
 import { ToastContainer } from "react-toastify";
 import showSuccessToast from "../compenents/successToaster";
 import showAlertToast from "../compenents/alertToast";
+import UpdateStartedTaskModal from "../compenents/updateStartedTaskModel";
 
 function Dashboard() {
   const { time, isRunning, resetTimer, setTime, setIsRunning } =
@@ -42,10 +44,12 @@ function Dashboard() {
   const [tasks, setTasks] = useState([]);
 
   const [pendingTasks, setPendingTasks] = useState([]);
-  const [startedTask, setStartedTask] = useState({});
+  const [startedTask, setStartedTask] = useState(null);
   const [taskTitles, setTaskTitles] = useState([]);
   const [todaysTask, setTodaysTask] = useState([]);
-  const [defaultTitle, setDefaultTitle] = useState(null);
+  const [defaultTitle, setDefaultTitle] = useState('');
+  const [defaultTimeToComplete, setDefaultTimeToComplete] = useState(null);
+
 
   const [todoError, setTodoError] = useState("");
   const [todos, setTodos] = useState([]);
@@ -68,18 +72,18 @@ function Dashboard() {
     setIsRunning(true);
   };
 
-  const playAudio = () => {
-    if (audioPlayer.current) {
-      audioPlayer.current
-        .play()
-        .then(() => {
-          console.log("Audio played successfully");
-        })
-        .catch((error) => {
-          console.error("Failed to play audio:", error);
-        });
-    }
-  };
+  // const playAudio = () => {
+  //   if (audioPlayer.current) {
+  //     audioPlayer.current
+  //       .play()
+  //       .then(() => {
+  //         console.log("Audio played successfully");
+  //       })
+  //       .catch((error) => {
+  //         console.error("Failed to play audio:", error);
+  //       });
+  //   }
+  // };
 
   // useEffect(() => {
   //   if (isRunning) {
@@ -95,24 +99,28 @@ function Dashboard() {
   //   }
   // }, [isRunning, audioPlayed, time]);
 
-  useEffect(() => {
-    if (isRunning) {
-      const TotalTimeInMinutes = Math.floor(time / 60);
-      const timeToComplete = startedTask.total_time_to_complete || 0;
-      const currentTime = Math.floor(Date.now() / 60000);
-      const timerTimeMinute = time / 60;
-      if (TotalTimeInMinutes >= timeToComplete) {
-        console.log(currentTime,lastPlayedTime,currentTime - lastPlayedTime == 1);
+  // useEffect(() => {
+  //   if (isRunning) {
+  //     const TotalTimeInMinutes = Math.floor(time / 60);
+  //     const timeToComplete = startedTask.total_time_to_complete || 0;
+  //     const currentTime = Math.floor(Date.now() / 60000);
+  //     const timerTimeMinute = time / 60;
+  //     if (TotalTimeInMinutes >= timeToComplete) {
+  //       console.log(
+  //         currentTime,
+  //         lastPlayedTime,
+  //         currentTime - lastPlayedTime == 1
+  //       );
 
-        if (timerTimeMinute - lastPlayedTime == 1) {
-          showWarningToast("Time exceeded, add some more time");
-          playAudio();
-          const timeCount = lastPlayedTime + 1;
-          localStorage.setItem('lastAudioPlayedTime',timeCount)
-        }
-      }
-    } 
-  }, [isRunning, time, startedTask,lastPlayedTime]);
+  //       if (timerTimeMinute - lastPlayedTime == 1) {
+  //         showWarningToast("Time exceeded, add some more time");
+  //         playAudio();
+  //         const timeCount = lastPlayedTime + 1;
+  //         localStorage.setItem("lastAudioPlayedTime", timeCount);
+  //       }
+  //     }
+  //   }
+  // }, [isRunning, time, startedTask, lastPlayedTime]);
 
   const fetchTasks = async () => {
     try {
@@ -142,11 +150,10 @@ function Dashboard() {
         if (pendingTask) {
           setPendingTasks(pendingTask);
         }
-        const newTime = time + 1;
-        const TotalTimeInMinutes = Math.floor(newTime / 60);
-
         if (startedTask) {
-          setStartedTask(startedTask);
+          setStartedTask(startedTask)
+          localStorage.setItem("started_task_start_date",startedTask.start_time)
+          localStorage.setItem("started_task_time_to_complete",startedTask.total_time_to_complete)
 
           const taskStartTimeUTC = new Date(startedTask.start_time);
           const taskStartTimeIST = new Date(
@@ -179,6 +186,7 @@ function Dashboard() {
           "time_to_complete",
           response.data.default_alert_time
         );
+        setDefaultTimeToComplete(response.data.default_alert_time)
       } else {
         console.error("Error:", response);
       }
@@ -210,7 +218,8 @@ function Dashboard() {
           const newDefaultTitle = response.data.find(
             (obj) => obj.is_default === true
           );
-          setDefaultTitle(newDefaultTitle);
+          setDefaultTitle(newDefaultTitle.name);
+          localStorage.setItem("default_title", newDefaultTitle.name);
         }
       } else {
         console.error("Error:", response);
@@ -241,7 +250,7 @@ function Dashboard() {
       if (startedTask) {
         await completeCurrentTask();
       }
-      
+
       await startNewTask(createdTask);
       // const newDefaultTitle = taskTitles.find((obj) => obj.is_default === true);
       // setDefaultTitle(newDefaultTitle);
@@ -259,7 +268,7 @@ function Dashboard() {
     try {
       const response = await UpdateTaskAPI(completedTask);
       if (response.status === 200) {
-        setStartedTask({});
+        setStartedTask(null);
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.id === completedTask.id ? { ...task, ...response.data } : task
@@ -267,7 +276,7 @@ function Dashboard() {
         );
         setTodaysTask([...todaysTask, response.data]);
         resetTimer();
-        localStorage.removeItem('lastAudioPlayedTime')
+        localStorage.removeItem("lastAudioPlayedTime");
       } else {
         console.error("Error:", response);
       }
@@ -289,7 +298,8 @@ function Dashboard() {
         setIsRunning(true);
         setTime(0);
         showSuccessToast("Task Started Successfully");
-        localStorage.setItem('lastAudioPlayedTime',0)
+        localStorage.setItem("lastAudioPlayedTime", 0);
+        localStorage.setItem("started_task_time_to_complete", response.data.total_time_to_complete);
       } else {
         console.error("Error:", response);
       }
@@ -316,8 +326,11 @@ function Dashboard() {
             task.id === updatedTask.id ? { ...task, ...response.data } : task
           )
         );
-        setStartedTask(response.data);
-        setAudioPlayed(false);
+        if(response.data.status == "started"){
+          setStartedTask(response.data);
+          localStorage.setItem("started_task_time_to_complete",response.data.total_time_to_complete)
+          setAudioPlayed(false);
+        }
         showSuccessToast("Task Updated Successfuly");
       } else {
         console.error("Error:", response);
@@ -346,7 +359,7 @@ function Dashboard() {
           )
         );
         setTodaysTask([...todaysTask, response.data]);
-        setStartedTask({});
+        setStartedTask(null);
         resetTimer();
         // setModalMessage("Task completed successfully!");
         // setShowModal(true);
@@ -383,7 +396,7 @@ function Dashboard() {
     try {
       const response = await TodoCreateAPI(data);
       if (response.status === 201) {
-        const updatedTodos = [...todos, response.data];
+        const updatedTodos = [response.data,...todos];
         setTodos(updatedTodos);
         // setModalMessage("Todo created successfully!");
         // setShowModal(true);
@@ -431,6 +444,12 @@ function Dashboard() {
     try {
       const response = await TodoUpdateAPI(todo);
       if (response.status === 200) {
+        const updatedTodo = { ...response.data };
+
+        // setTodos((prevTodos) => {
+        //   // Filter out the old todo item and add the updated todo to the beginning
+        //   return [updatedTodo, ...prevTodos.filter((t) => t.id !== todo.id)];
+        // });
         setTodos((prevTodo) =>
           prevTodo.map((t) =>
             t.id === todo.id ? { ...t, ...response.data } : t
@@ -467,8 +486,16 @@ function Dashboard() {
   const handleFilterChange = async (e) => {
     const filter_data = e.target.value;
     setFilter(filter_data);
+    const completedTask = tasks.filter(
+      (task) => task.status === "completed"
+    );
 
-    const filteredTasks = tasks.filter((task) => {
+    const latestTodaysTasks = completedTask.filter((task) => {
+      const taskStartDate = new Date(task.start_time);
+      const today = new Date();
+      return taskStartDate.toDateString() === today.toDateString();
+    });
+    const filteredTasks = latestTodaysTasks.filter((task) => {
       const matchesTitle = filter_data
         ? task.title.toLowerCase().includes(filter_data.toLowerCase())
         : true;
@@ -496,9 +523,7 @@ function Dashboard() {
               <h1>{formatElapsedTime(time)}</h1>
             </div>
 
-            {isEmptyObject(startedTask) ? (
-              <p className="text-center">No task started</p>
-            ) : (
+            {startedTask ==null ? "": (
               <TaskStarted
                 task={startedTask}
                 timerRunning={isRunning}
@@ -515,6 +540,7 @@ function Dashboard() {
               onAddTask={addTask}
               taskTitles={taskTitles}
               defaultTitle={defaultTitle}
+              defaultTimeToComplete={defaultTimeToComplete}
             />
 
             <div className="container mt-5">
@@ -540,7 +566,7 @@ function Dashboard() {
               <table className="table table-striped justify-content-center">
                 <thead>
                   <tr>
-                    <th scope="col">Time(min) </th>
+                    <th scope="col">Completed Time(min) </th>
                     <th scope="col">Task Type</th>
                     <th scope="col">Description</th>
                   </tr>
@@ -572,9 +598,9 @@ function Dashboard() {
               <h3 className="">TODOS</h3>
             </div>
             <TodoCreate onCreateTodo={CreateTodo} todoError={todoError} />
-            <div className="text-center mt-5 mb-4">
+            {/* <div className="text-center mt-5 mb-4">
               <h3 className="">TODO LIST</h3>
-            </div>
+            </div> */}
             <div className="container pb-5">
               <TodoCard
                 todos={todos}
@@ -601,7 +627,7 @@ function Dashboard() {
       />
 
       {taskToUpdate && (
-        <UpdateTaskModal
+        <UpdateStartedTaskModal
           show={showTaskUpdateModal}
           handleClose={CloseShowTaskUpdateModal}
           handleUpdate={updateTask}

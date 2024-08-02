@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import "../assest/css/updateModelDataList.css";
-function UpdateTaskModal({
+function UpdateStartedTaskModal({
   taskToUpdate,
   taskTitles,
   show,
@@ -122,7 +122,6 @@ function UpdateTaskModal({
               value={data.total_time_to_complete}
               onChange={handleChange}
               min="0"
-              readOnly={true}
             />
           </Form.Group>
           <Button variant="primary" type="submit" className="btn-sm mt-3">
@@ -143,4 +142,4 @@ function UpdateTaskModal({
   );
 }
 
-export default UpdateTaskModal;
+export default UpdateStartedTaskModal;

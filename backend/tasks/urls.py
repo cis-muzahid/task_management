@@ -2,7 +2,7 @@ from django.urls import path
 from .views import ( TaskListCreateView, TaskDetailView, MultipleTaskUpdateView, TaskStartStopView,
                     TaskDeleteView,TaskUpdateView,TaskTitleListView, TaskTitleCreateView,
                     ToDoTaskRetrieveUpdateDestroyAPIView, ToDoTaskListCreateAPIView, TitleTaskListView , TaskTitleUpdateView, TaskTitleDeleteView,
-                    SetDefaultTaskTitleView)
+                    SetDefaultTaskTitleView,StartedTaskListView)
 
 
 urlpatterns = [
@@ -24,4 +24,5 @@ urlpatterns = [
 
     path('set-default-title/<int:id>/', SetDefaultTaskTitleView.as_view(), name='set_default_task_title'),
 
+    path('started-tasks/', StartedTaskListView.as_view(), name='started-tasks'),
 ]

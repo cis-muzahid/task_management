@@ -62,6 +62,8 @@ const TaskTable = ({ data, handleShowTaskUpdateModal, onDeleteTask, HandleChecke
 
   //   setTotalTimeTaken(formattedTime)
   // };
+
+  
   return (
     <div className="container">
       {/* {

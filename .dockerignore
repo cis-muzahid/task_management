@@ -1,6 +1,6 @@
 # Ignore the Python virtual environment
 backend/venv/
-
+venv
 # Ignore SQLite database file
 backend/db.sqlite3
 

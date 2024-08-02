@@ -35,7 +35,6 @@ const TaskTableList = () => {
     try {
       const response = await TaskListAPI(queryParams);
       if (response.status === 200) {
-        console.log(response.data)
         const newTasks = response.data.filter((task) => task.status == 'completed');
         setTasks(newTasks);
       } else {
@@ -84,7 +83,8 @@ const TaskTableList = () => {
     try {
       const response = await TaskListAPI(queryString);
       if (response.status === 200) {
-        setTasks(response.data);
+        const newTasks = response.data.filter((task) => task.status == 'completed');
+        setTasks(newTasks)
       } else {
         console.error("Error:", response);
       }

@@ -14,6 +14,7 @@
 # production
 /build
 
+backend/staticfiles
 backend/venv
 backend/.env
 backend/.env
@@ -21,6 +22,7 @@ backend/.env
 backend/task_management_backend/__pycache__
 backend/tasks/__pycache__
 backend/users/__pycache__
+
 
 
 

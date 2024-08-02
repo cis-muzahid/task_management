@@ -255,3 +255,14 @@ class SetDefaultTaskTitleView(APIView):
         all_task_titles = TaskTitle.objects.filter(user=self.request.user).order_by('-id')
         all_titles_serializer = TaskUpdateDefaultSerializer(all_task_titles, many=True)
         return Response(all_titles_serializer.data, status=status.HTTP_200_OK)
+    
+
+class StartedTaskListView(APIView):
+    serializer_class = TitleTaskListSerializer
+
+    def get(self, request):
+        tasks = Task.objects.filter(status='started').first()
+        if tasks is None:
+            return Response({'detail': 'No started tasks found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = TaskSerializer(tasks)  
+        return Response(serializer.data, status=status.HTTP_200_OK)

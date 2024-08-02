@@ -19,8 +19,6 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
         }
     });
 
-    const currentTodos = sortedTodos.slice(indexOfFirstTodo, indexOfLastTodo);
-
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
     };
@@ -31,12 +29,12 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
 
     return (
         <div className='container'>
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            {/* <div className="d-flex justify-content-between align-items-center mb-3">
                 <h3></h3>
                 <button className="btn btn-sm btn-secondary" onClick={toggleSortingOrder}>
                     Sort by({sortingOrder === 'asc' ? 'Asc' : 'Des'})
                 </button>
-            </div>
+            </div> */}
             <table className="table table-striped">
                 <thead>
                     <tr>
@@ -46,7 +44,7 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
                     </tr>
                 </thead>
                 <tbody>
-                    {currentTodos.map((todo, index) => (
+                    {todos.map((todo, index) => (
                         <tr key={index} className='mt-2'>
                             <td>
                                 <input
