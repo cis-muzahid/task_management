@@ -7,6 +7,7 @@ const TaskTable = ({ data, handleShowTaskUpdateModal, onDeleteTask, HandleChecke
   // const [checkedTasks,setCheckedTasks] = useState([]);
   // const [totalTimeTaken,setTotalTimeTaken] = useState('00:00:00');
 
+  const [checkedTasks, setCheckedTasks] = useState(new Set());
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -23,53 +24,19 @@ const TaskTable = ({ data, handleShowTaskUpdateModal, onDeleteTask, HandleChecke
     pageNumbers.push(i);
   }
 
-  // const calculateCompletionTime = (startTime, endTime) => {
-  //   const start = new Date(startTime);
-  //   const end = new Date(endTime); 
-  //   const completionTime = (end - start) / 60000; 
-  //   return completionTime;
-  // };
+  const handleCheckboxChange = (task) => {
+    const updatedCheckedTasks = new Set(checkedTasks);
 
-  // const HandleCheckedTasks = (task) => {
-  //   const isTaskChecked = checkedTasks.some((t) => t.id === task.id);
-
-  //   let updatedCheckedTasks;
-
-  //   if (isTaskChecked) {
-  //     updatedCheckedTasks = checkedTasks.filter((t) => t.id !== task.id);
-  //   } else {
-  //     updatedCheckedTasks = [...checkedTasks, task];
-  //   }
-
-  //   setCheckedTasks(updatedCheckedTasks);
-
-  //   const formatTime = (minutes) => {
-  //     const totalSeconds = Math.floor(minutes * 60);
-  //     const hours = Math.floor(totalSeconds / 3600);
-  //     const minutesLeft = Math.floor((totalSeconds % 3600) / 60);
-  //     const seconds = totalSeconds % 60;
-  //     return `${hours.toString().padStart(2, "0")}:${minutesLeft
-  //       .toString()
-  //       .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  //   };
-
-  //   const totalCompletionTime = updatedCheckedTasks.reduce((totalTime, t) => {
-  //     const completionTime = calculateCompletionTime(t.start_time, t.end_time);
-  //     return totalTime + completionTime;
-  //   }, 0);
-
-  //   const formattedTime = formatTime(totalCompletionTime);
-
-  //   setTotalTimeTaken(formattedTime)
-  // };
-
-  
+    if (updatedCheckedTasks.has(task.id)) {
+      updatedCheckedTasks.delete(task.id);
+    } else {
+      updatedCheckedTasks.add(task.id);
+    }
+    setCheckedTasks(updatedCheckedTasks);
+    HandleCheckedTasks && HandleCheckedTasks(task);
+  };
   return (
     <div className="container">
-      {/* {
-        totalTimeTaken && totalTimeTaken !== '00:00:00' ? <span>Total Time Taken : {totalTimeTaken}</span>:<span className="mb-5"></span>
-      } */}
-      
       <table className="table table-striped ">
         <thead>
           <tr>
@@ -89,9 +56,8 @@ const TaskTable = ({ data, handleShowTaskUpdateModal, onDeleteTask, HandleChecke
                 <input
                   type="checkbox"
                   className="form-check-input ml-2"
-                  onChange={() => HandleCheckedTasks(task)}
-                //   checked={todo.status === "COMPLETED"}
-                //   disabled={todo.status === "COMPLETED"}
+                  onChange={() => handleCheckboxChange(task)}
+                  checked={checkedTasks.has(task.id)}
                 />
               </td>
               <td>{task.title}</td>

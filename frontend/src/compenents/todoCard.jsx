@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComplete }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [sortingOrder, setSortingOrder] = useState('asc');
+    const [completedTodos, setCompletedTodos] = useState({}); 
 
     const todosPerPage = 10;
 
@@ -11,13 +12,7 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
     const indexOfLastTodo = currentPage * todosPerPage;
     const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
 
-    const sortedTodos = [...todos].sort((a, b) => {
-        if (sortingOrder === 'asc') {
-            return a.id - b.id;
-        } else {
-            return b.id - a.id;
-        }
-    });
+    const currentTodos = todos.slice(indexOfFirstTodo, indexOfLastTodo);
 
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
@@ -25,6 +20,15 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
 
     const toggleSortingOrder = () => {
         setSortingOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    };
+
+    const handleCheckboxChange = (todo) => {
+        const isCompleted = completedTodos[todo.id] || todo.status === 'COMPLETED';
+        const updatedCompletedTodos = { ...completedTodos, [todo.id]: !isCompleted };
+
+        // Persist checked state across pages
+        setCompletedTodos(updatedCompletedTodos);
+        handleTodoComplete(todo); // Optional: Call the existing function if needed
     };
 
     return (
@@ -44,19 +48,19 @@ const TodoCard = ({ todos, handleTodoDelete, showTodoUpdateModel, handleTodoComp
                     </tr>
                 </thead>
                 <tbody>
-                    {todos.map((todo, index) => (
+                    {currentTodos.map((todo, index) => (
                         <tr key={index} className='mt-2'>
                             <td>
                                 <input
                                     type="checkbox"
                                     className="form-check-input ml-2"
-                                    onChange={() => handleTodoComplete(todo)}
-                                    checked={todo.status === 'COMPLETED'}
+                                    onChange={() => handleCheckboxChange(todo)}
+                                    checked={completedTodos[todo.id] || todo.status === 'COMPLETED'}
                                     disabled={todo.status === 'COMPLETED'}
                                 />
                             </td>
                             <td>
-                                {todo.status === 'COMPLETED' ? (
+                                {completedTodos[todo.id] || todo.status === 'COMPLETED' ? (
                                     <del>{todo.title}</del>
                                 ) : (
                                     <span className="card-title h5">{todo.title}</span>
