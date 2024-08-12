@@ -68,8 +68,7 @@ axiosInstanceWithInterceptors.interceptors.response.use(
         return axiosInstanceWithInterceptors(originalRequest);
       } catch (error) {
         console.error('Error refreshing token:', error);
-        localStorage.removeItem('usr_1a2b3c');
-        localStorage.removeItem('usr_1a2b3r');
+        localStorage.clear();
         window.location.href = '/login';
         return Promise.reject(error);
       }

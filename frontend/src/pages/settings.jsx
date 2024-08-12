@@ -88,20 +88,19 @@ function Settings() {
   const ClosePasswordChangeModel = () => setShowPasswordChangeModel(false);
 
   const handleCreateTaskTitle = async (title) => {
-    debugger
+    debugger;
     try {
       const response = await CreateTaskTitleAPI(title);
       if (response.status === 201) {
         setTitle({ ...title, name: "" });
         const updatedTitles = [...titles, response.data];
         setTitles(updatedTitles);
-        showSuccessToast("Task type created successfully!")
-        CloseTitleCreateModal()
+        showSuccessToast("Task type created successfully!");
+        CloseTitleCreateModal();
       } else {
         console.error("Error:", response);
         setTitleError(response.data.name[0]);
       }
-      
     } catch (error) {
       if (error.response) {
         if (error.response.data.name) {
@@ -153,7 +152,7 @@ function Settings() {
       const response = await ChangePasswordAPI(data);
       if (response.status === 200) {
         showSuccessToast("Password changed successfully");
-        ClosePasswordChangeModel()  
+        ClosePasswordChangeModel();
       } else {
         console.error("Error:", response);
         setPassowrdError(
@@ -207,7 +206,7 @@ function Settings() {
       if (response.status === 204) {
         const updatedTitles = titles.filter((t) => t.id !== id);
         setTitles(updatedTitles);
-        showAlertToast("Task Type Deleted")
+        showAlertToast("Task Type Deleted");
       } else {
         console.error("Error:", response);
       }
@@ -253,7 +252,7 @@ function Settings() {
     try {
       const response = await SetDefaultTitleAPI(id);
       if (response.status === 200) {
-        showSuccessToast("Default title has been set successfully!")
+        showSuccessToast("Default title has been set successfully!");
         setTitles(response.data);
       }
     } catch (error) {
@@ -302,17 +301,28 @@ function Settings() {
         <h1>Tasks Type</h1>
         <div className="row d-flex justify-content-end mb-3">
           <div className="col-auto">
-            <div className="input-group">
-              <div className="input-group">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="form-control"
-                  value={filter.search}
-                  name="search"
-                  onChange={handleFilterChange}
-                />
-              </div>
+            <div className="input-group position-relative">
+              <input
+                type="text"
+                placeholder="Search"
+                className="form-control"
+                value={filter.search}
+                name="search"
+                onChange={handleFilterChange}
+              />
+              {filter.search && (
+                <button
+                  type="button"
+                  className="clear-button"
+                  onClick={() =>
+                    handleFilterChange({
+                      target: { name: "search", value: "" },
+                    })
+                  }
+                >
+                  <i className="fa fa-times"></i>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -324,18 +334,18 @@ function Settings() {
         />
       </div>
 
-      {
-        showTitleModal &&(
+      {showTitleModal && (
         <CreateTaskTitle
-        show={showTitleModal}
-        title={title}
-        setTitle={setTitle}
-        titleError={titleError}
-        titleSuccess={titleSuccess}
-        handleClose={CloseTitleCreateModal}
-        handleCreate={handleCreateTaskTitle}
-        defaultAlertTime={userdetail.default_alert_time}
-      />)}
+          show={showTitleModal}
+          title={title}
+          setTitle={setTitle}
+          titleError={titleError}
+          titleSuccess={titleSuccess}
+          handleClose={CloseTitleCreateModal}
+          handleCreate={handleCreateTaskTitle}
+          defaultAlertTime={userdetail.default_alert_time}
+        />
+      )}
       <ChangePassword
         show={showPasswordChangeModel}
         passowrdError={passowrdError}

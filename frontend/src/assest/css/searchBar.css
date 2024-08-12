@@ -1,0 +1,31 @@
+.input-group {
+  position: relative;
+}
+
+.clear-button {
+  background: transparent;
+  border: none;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  padding: 0;
+  cursor: pointer;
+  font-size: 16px;
+  color: #aaa;
+}
+
+.clear-button:hover {
+  color: #525252;
+}
+
+.clear-button i {
+  font-size: 16px;
+}
+
+.clear-button:focus,
+.clear-button:active {
+  outline: none;
+  border: none;
+}

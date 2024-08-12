@@ -7,6 +7,7 @@ from .models import Task, TaskTitle, ToDoTask
 from .serializers import TaskSerializer, TaskTitleSerializer, ToDoTaskSerializer, TitleTaskListSerializer, TaskTitleUpdateSerializer, TaskUpdateDefaultSerializer
 from users.serializers import CustomUserSerializer
 from django.utils.dateparse import parse_date
+from django.db.models import Case, When, IntegerField
 
 class TaskListCreateView(generics.ListCreateAPIView):
     serializer_class = TaskSerializer
@@ -191,8 +192,23 @@ class ToDoTaskListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ToDoTaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    # def get_queryset(self):
+    #     return ToDoTask.objects.filter(user=self.request.user).order_by('-id')
+
     def get_queryset(self):
-        return ToDoTask.objects.filter(user=self.request.user).order_by('-id')
+        return (
+            ToDoTask.objects
+            .filter(user=self.request.user)
+            .order_by(
+                Case(
+                    When(status='PENDING', then=1),
+                    When(status='IN_PROGRESS', then=2),
+                    When(status='COMPLETED', then=3),
+                    output_field=IntegerField(),
+                ),
+                '-id'
+            )
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

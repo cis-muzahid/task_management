@@ -27,6 +27,7 @@ export const removeTokensSession = () => {
     localStorage.removeItem('lastAudioPlayedTime');
     localStorage.removeItem('timer-time');
     localStorage.removeItem('timer-isRunning');
+    localStorage.removeItem('user-has-interacted');
 }
 
 

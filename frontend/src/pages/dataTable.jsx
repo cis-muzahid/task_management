@@ -13,7 +13,7 @@ import AlertModel from "../compenents/alertModel";
 import showSuccessToast from "../compenents/successToaster";
 import { ToastContainer } from "react-toastify";
 import showAlertToast from "../compenents/alertToast";
-
+import "../assest/css/searchBar.css";
 const TaskTableList = () => {
   const [tasks, setTasks] = useState([]);
   const [filters, setFilters] = useState({
@@ -28,14 +28,16 @@ const TaskTableList = () => {
   const [modalMessage, setModalMessage] = useState("");
 
   const [taskTitles, setTaskTitles] = useState([]);
-  const [checkedTasks,setCheckedTasks] = useState([]);
-  const [totalTimeTaken,setTotalTimeTaken] = useState('00:00:00');
+  const [checkedTasks, setCheckedTasks] = useState([]);
+  const [totalTimeTaken, setTotalTimeTaken] = useState("00:00:00");
 
   const fetchTasks = async (queryParams = {}) => {
     try {
       const response = await TaskListAPI(queryParams);
       if (response.status === 200) {
-        const newTasks = response.data.filter((task) => task.status == 'completed');
+        const newTasks = response.data.filter(
+          (task) => task.status == "completed"
+        );
         setTasks(newTasks);
       } else {
         console.error("Error:", response);
@@ -83,8 +85,10 @@ const TaskTableList = () => {
     try {
       const response = await TaskListAPI(queryString);
       if (response.status === 200) {
-        const newTasks = response.data.filter((task) => task.status == 'completed');
-        setTasks(newTasks)
+        const newTasks = response.data.filter(
+          (task) => task.status == "completed"
+        );
+        setTasks(newTasks);
       } else {
         console.error("Error:", response);
       }
@@ -138,11 +142,10 @@ const TaskTableList = () => {
     setShowModal(false);
   };
 
-
   const calculateCompletionTime = (startTime, endTime) => {
     const start = new Date(startTime);
-    const end = new Date(endTime); 
-    const completionTime = (end - start) / 60000; 
+    const end = new Date(endTime);
+    const completionTime = (end - start) / 60000;
     return completionTime;
   };
 
@@ -176,19 +179,21 @@ const TaskTableList = () => {
 
     const formattedTime = formatTime(totalCompletionTime);
 
-    setTotalTimeTaken(formattedTime)
+    setTotalTimeTaken(formattedTime);
   };
 
   return (
     <>
       <NavigationBar />
       <div className="container">
-      <div className="d-flex justify-content-between">
-        <h1>Tasks</h1>
-              {
-        totalTimeTaken && totalTimeTaken !== '00:00:00' ? <h3>Total Time Taken - {totalTimeTaken}</h3>:<span className="mb-5"></span>
-      }
-      </div>
+        <div className="d-flex justify-content-between">
+          <h1>Tasks</h1>
+          {totalTimeTaken && totalTimeTaken !== "00:00:00" ? (
+            <h3>Total Time Taken - {totalTimeTaken}</h3>
+          ) : (
+            <span className="mb-5"></span>
+          )}
+        </div>
         <div className="row d-flex justify-content-end mb-3">
           {/* <div className="col-auto">
             <div className="dropdown">
@@ -228,18 +233,30 @@ const TaskTableList = () => {
               />
             </div>
           </div>
+
           <div className="col-auto">
-            <div className="input-group">
-              <div className="input-group">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="form-control"
-                  value={filters.search}
-                  name="search"
-                  onChange={handleFilterChange}
-                />
-              </div>
+            <div className="input-group position-relative">
+              <input
+                type="text"
+                placeholder="Search"
+                className="form-control"
+                value={filters.search}
+                name="search"
+                onChange={handleFilterChange}
+              />
+              {filters.search && (
+                <button
+                  type="button"
+                  className="clear-button"
+                  onClick={() =>
+                    handleFilterChange({
+                      target: { name: "search", value: "" },
+                    })
+                  }
+                >
+                  <i className="fa fa-times"></i>
+                </button>
+              )}
             </div>
           </div>
         </div>
