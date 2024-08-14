@@ -77,10 +77,10 @@ function UpdateStartedTaskModal({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="title">
+          {/* <Form.Group controlId="title">
             <Form.Label>Title</Form.Label>
             <Form.Control
-              type="text"
+              type="select"
               name="title"
               placeholder="Enter task title"
               value={data.title}
@@ -102,6 +102,22 @@ function UpdateStartedTaskModal({
                 ))}
               </div>
             )}
+          </Form.Group> */}
+          <Form.Group controlId="title">
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+              as="select"
+              name="title"
+              value={data.title}
+              onChange={handleChange}
+              required
+            >
+              {taskTitles.map((title, index) => (
+                <option key={index} value={title}>
+                  {title}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
           <Form.Group controlId="description">
             <Form.Label>Description</Form.Label>
